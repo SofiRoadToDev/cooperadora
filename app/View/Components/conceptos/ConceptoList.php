@@ -1,17 +1,17 @@
 <?php
 
-namespace App\View\Components\alumnos;
+namespace App\View\Components\conceptos;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class AlumnoForm extends Component
+class ConceptoList extends Component
 {
-   
-    public function __construct(public $cursos, public $alumno = null )
+
+    public function __construct(public $conceptos)
     {
-      
+        //
     }
 
     /**
@@ -19,6 +19,6 @@ class AlumnoForm extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.alumnos.alumno-form');
+        return view('components.conceptos.concepto-list');
     }
 }

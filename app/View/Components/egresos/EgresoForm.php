@@ -1,19 +1,21 @@
 <?php
 
-namespace App\View\Components\ingresos;
+namespace App\View\Components\egresos;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class IngresoForm extends Component
+class EgresoForm extends Component
 {
     /**
      * Create a new component instance.
      */
-    public function __construct(public $conceptos, public $ingreso = null)
+
+ 
+    public function __construct(  public $egreso = null)
     {
-        //
+       
     }
 
     /**
@@ -21,6 +23,6 @@ class IngresoForm extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.ingresos.ingreso-form');
+        return view('components.egresos.egreso-form');
     }
 }

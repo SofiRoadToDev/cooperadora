@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ingreso extends Model
 {
-    protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso'];
+    protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso', 'email', 'conceptos'];
 
 
     public function conceptos(){
@@ -14,5 +14,8 @@ class Ingreso extends Model
          'ingreso_detalle_conceptos',
          'ingreso_id', 'concepto_id')
             ->withPivot('total_concepto', 'cantidad');
+    }
+    public function alumno(){
+        return $this->belongsTo(Alumno::class, 'alumno_id');
     }
 }

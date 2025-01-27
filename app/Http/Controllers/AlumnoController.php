@@ -10,30 +10,22 @@ use Illuminate\Support\Facades\Validator;
 
 class AlumnoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $alumnos = Alumno::all();
         return view('alumnos.index', compact('alumnos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {   $cursos = Curso::all();
-        return view('alumnos.create', compact('cursos'));
+        $alumno = new Alumno();
+        return view('alumnos.create', compact('cursos', 'alumno'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
-    {
-       
-
+    {      
         $validator = Validator::make($request->all(),[
             'apellido' => 'required|max:20',
             'nombre' => 'required|max:20',
@@ -42,7 +34,7 @@ class AlumnoController extends Controller
 
         if($validator->fails()){
             return redirect()
-                ->route('alumnos.crear')
+                ->route('alumnos.create')
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -53,35 +45,48 @@ class AlumnoController extends Controller
             ->with('success', 'ALumno creado exitosamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Alumno $alumno)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Alumno $alumno)
-    {
-        //
+    { 
+        $cursos = Curso::all();
+        return view('alumnos.create', compact('alumno', 'cursos'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, Alumno $alumno)
     {
-        //
+             $validator = Validator::make($request->all(),[
+            'apellido' => 'required|max:20',
+            'nombre' => 'required|max:20',
+            'dni' => 'required|max:8'
+        ]);
+
+        if($validator->fails()){
+            return redirect()
+                ->route('alumnos.edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $alumno->update($request->only(['apellido', 'nombre', 'dni']));
+        
+         return redirect()
+            ->route('alumnos.index')
+            ->with('success', 'ALumno creado exitosamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Alumno $alumno)
-    {
-        //
+    {   
+        if(!isset($alumno)){
+           return redirect()->route('alumnos.index')->with('Error', 'Alumno no existente');
+        };
+         Alumno::destroy($alumno->id);
+            return redirect()
+                    ->route('alumnos.index')
+                    ->with('success', 'Alumno borrado correctamente');
     }
 }

@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concepto;
 use App\Models\Ingreso;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class IngresoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $ingresos = Ingreso::orderBy('fecha', 'desc')->get();
         return view('ingresos.index', compact('ingresos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
-    {
-        return view('ingresos.create');
+    {   $conceptos = Concepto::all();
+        $ingreso = new Ingreso();
+        return view('ingresos.create', compact('conceptos', 'ingreso'));
     }
 
     /**
@@ -29,7 +28,42 @@ class IngresoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+       
+        $validator = Validator::make($request->all(), [
+            'fecha' => 'required|date',
+            'hora' => 'required|date_format:H:i',
+            'alumno_id' => 'required|exists:alumnos,id',
+            'conceptos' => 'required|array',
+            'conceptos.*id' => 'required|exists:concepto,id',
+            'importe_total' => 'required|numeric|min:1'
+        ]);
+
+        if($validator->fails()){
+            
+            return redirect()
+                    ->route('ingresos.create')
+                    ->withErrors($validator->errors())
+                    ->withInput();
+        };
+
+        $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email']);
+              
+        $ingreso = Ingreso::create($ingresoData); // despues revisar las relaciones con concepto, que son many to many
+       
+        $conceptos = [];
+        foreach ($request->input('conceptos') as $concepto) {
+            $conceptos[$concepto['id']] = [
+                'cantidad' => $concepto['cantidad'],
+                'total_concepto' => $concepto['total_concepto'],
+            ];
+        }
+
+        $ingreso->conceptos()->attach($conceptos);
+
+        return redirect()
+        ->route('ingresos.create')
+        ->with('success', 'Ingreso creado exitosamente con conceptos asociados.');
     }
 
     /**
@@ -45,7 +79,7 @@ class IngresoController extends Controller
      */
     public function edit(Ingreso $ingreso)
     {
-        //
+        return view('ingresos.create', compact($ingreso));
     }
 
     /**

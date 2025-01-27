@@ -1,8 +1,7 @@
 <x-base-layout>
-    <x-header/>
-    <div class="flex  justify-center p-4 bg-slate-300 h-[100vh]">
+    <div class="flex  justify-center p-4 h-[100vh]">
         <div class="flex flex-col">
-            <button class="px-3 py-2 w-1/2 mx-auto bg-slate-800 text-white"><a href="{{route('ingresos.create')}}">Nuevo</a></button>
+            <button class="leaf-btn-main"><a href="{{route('ingresos.create')}}">Nuevo</a></button>
         <x-ingresos-list  :$ingresos/>
         </div>
         

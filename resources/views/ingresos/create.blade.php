@@ -1,10 +1,11 @@
 <x-base-layout>
-    <x-header/>
-    <div class="flex  justify-center p-4 bg-slate-300 h-[100vh]">
-       <x-ingresos.ingreso-form/>
+   
+    <div class="flex  mx-auto w-1/2 bg-slate-300 h-[100vh]">
+       <x-ingresos.ingreso-form class="col-span-3" :$conceptos :$ingreso/>
+      
     </div>
         @if (session('success'))
-            <div class="bg-green-100 text-green-800 border border-green-300 p-4 rounded-md">
+            <div class="bg-green-100 text-green-800 border border-green-300 col-span-1 p-4 rounded-md">
                 {{ session('success') }}
             </div>
         @endif

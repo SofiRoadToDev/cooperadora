@@ -1,7 +1,7 @@
 <x-base-layout>
-   
+    
     <div class="flex  justify-center p-4  h-[100vh]">
-        <x-alumnos.alumno-form :$cursos :$alumno/>  
+       <x-egresos.egreso-form :$egreso/>
     </div>
         @if (session('success'))
             <div class="bg-green-100 text-green-800 border border-green-300 p-4 rounded-md">

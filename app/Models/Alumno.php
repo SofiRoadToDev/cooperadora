@@ -7,9 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Alumno extends Model
 {
     protected $fillable = ['apellido', 'nombre', 'dni', 'curso'];
-
+    protected $primaryKey = 'id';
+    protected $table = 'alumnos';
 
     public function curso(){
-        $this->belongsTo(Curso::class);
+        return $this->belongsTo(Curso::class);
+    }
+
+    public function ingresos(){
+        return $this->hasMany(Ingreso::class);
     }
 }

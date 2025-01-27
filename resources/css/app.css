@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.table-header{
+    @apply border bg-leafdarkest text-white;
+}
+
+.leaf-btn-main{
+    @apply px-3 py-2 w-1/2 mx-auto bg-leafsecond text-white;
+}
+
+.form-header{
+    @apply text-center py-4 text-xl text-white p-3 bg-leafdarkest mb-4;
+}

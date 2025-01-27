@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->dateTime('hora');
-            $table->text('observaciones');
+            $table->text('observaciones')->nullable();
             $table->unsignedBigInteger('alumno_id');
-            $table->foreign('alumno_id')->references('id')->on('alumno')->onDelete('cascade');
+            $table->foreign('alumno_id')->references('id')->on('alumnos')->onDelete('cascade');
             $table->decimal('importe_total', 6,2);
             $table->boolean('emailSent')->default('false');
             $table->boolean('impreso')->default('false');

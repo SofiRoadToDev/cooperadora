@@ -13,4 +13,8 @@ class Concepto extends Model
     public function ingresos(){
         return $this->belongsToMany(Ingreso::class, 'ingreso_detalle_conceptos', 'concepto_id', 'ingreso_id');
     }
+
+    public function egresos(){
+        return $this->hasMany(Egreso::class, 'id_concepto');
+    }
 }

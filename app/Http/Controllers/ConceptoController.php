@@ -4,47 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Models\Concepto;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
 class ConceptoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+ 
     public function index()
     {
-        //
+        $conceptos = Concepto::all();
+        
+        return view('conceptos.index', compact('conceptos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
-    {
-        //
+    {   $concepto = new Concepto();
+        return view('conceptos.create', compact('concepto'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required',
+            'importe' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return redirect()
+                ->route('conceptos.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        Concepto::create($request->all());
+        return redirect()
+                ->route('conceptos.index')
+                ->with('success', 'Concepto creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(Concepto $concepto)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(Concepto $concepto)
     {
-        //
+        return view('conceptos.create', compact($concepto));
     }
 
     /**
@@ -52,14 +59,38 @@ class ConceptoController extends Controller
      */
     public function update(Request $request, Concepto $concepto)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required',
+            'importe' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return redirect()
+                ->route('conceptos.edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $concepto->update($request->only(['nombre', 'importe']));
+
+        return redirect()
+                ->route('conceptos.index')
+                ->with('success', 'Concepto actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Concepto $concepto)
     {
-        //
+        if(!isset($concepto)){
+            return redirect()
+                ->route('conceptos.index')
+                ->with('error', 'concepto inexistente');
+        };
+
+        $concepto->delete();
+
+        return redirect()
+                ->route('conceptos.index')
+                ->with('success', 'Concepto borrado exitosamente');
     }
 }

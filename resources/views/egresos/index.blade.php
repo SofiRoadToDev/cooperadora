@@ -1,8 +1,9 @@
 <x-base-layout>
-    <div class="flex  justify-center p-4  h-[100vh]">
+    
+    <div class="flex  justify-center p-4 bg-leaflight h-[100vh]">
         <div class="flex flex-col">
-            <button class="leaf-btn-main"><a href="{{route('alumnos.create')}}">Nuevo</a></button>
-        <x-alumno-list  :$alumnos/>
+            <button class="leaf-btn-main"><a href="{{route('egresos.create')}}">Nuevo</a></button>
+        <x-egresos.egreso-list  :$egresos/>
         </div>
         
     </div>

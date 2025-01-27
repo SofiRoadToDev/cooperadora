@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
     <x-partials.head/>
 <body>
-    <main >
+    <main class="bg-leaflight">
+        <x-hero/>
+        <x-header/>      
         {{$slot}}
     </main>
     

@@ -1,0 +1,1 @@
+<div>{{$ingreso->importe_total}}</div>
