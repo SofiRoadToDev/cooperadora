@@ -6,7 +6,7 @@ use App\Models\Alumno;
 use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use Inertia\Inertia;
 
 class AlumnoController extends Controller
 {
@@ -14,14 +14,14 @@ class AlumnoController extends Controller
     public function index()
     {
         $alumnos = Alumno::all();
-        return view('alumnos.index', compact('alumnos'));
+        return Inertia('Alumno', compact('alumnos'));
     }
 
 
     public function create()
     {   $cursos = Curso::all();
         $alumno = new Alumno();
-        return view('alumnos.create', compact('cursos', 'alumno'));
+        return Inertia('alumnos.create', compact('cursos', 'alumno'));
     }
 
     public function store(Request $request)

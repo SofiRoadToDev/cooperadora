@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Concepto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
+
 class ConceptoController extends Controller
 {
  
@@ -12,7 +14,7 @@ class ConceptoController extends Controller
     {
         $conceptos = Concepto::all();
         
-        return view('conceptos.index', compact('conceptos'));
+        return Inertia('Concepto', compact('conceptos'));
     }
 
 

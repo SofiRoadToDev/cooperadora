@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Egreso;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EgresoController extends Controller
 {
@@ -13,7 +14,7 @@ class EgresoController extends Controller
     public function index()
     {
         $egresos = Egreso::all();
-        return view('egresos.index', compact('egresos'));
+        return Inertia('Egreso', compact('egresos'));
     }
 
     /**

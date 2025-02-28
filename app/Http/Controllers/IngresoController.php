@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Concepto;
 use App\Models\Ingreso;
+use App\Models\Alumno;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Inertia\Inertia;
 
 class IngresoController extends Controller
 {
@@ -13,7 +15,7 @@ class IngresoController extends Controller
     public function index()
     {
         $ingresos = Ingreso::orderBy('fecha', 'desc')->get();
-        return view('ingresos.index', compact('ingresos'));
+        return Inertia('Ingreso', compact('ingresos'));
     }
 
 

@@ -11,17 +11,27 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Ingreso;
 use Barryvdh\DomPDF\Facade\Pdf;
-
-Route::get('/', function () {
-    return view('index');
-});
+use Inertia\Inertia;
 
 
 
-Route::resource('/ingresos', IngresoController::class);
+
+Route::get('/alumnos', [AlumnoController::class, 'index']);
+
+Route::get('/ingresos', [IngresoController::class, 'index']);
+
+Route::get('/egresos', [EgresoController::class, 'index']);
+
+
+Route::get('/conceptos', [ConceptoController::class, 'index']);
+
+
+
+
+/*Route::resource('/ingresos', IngresoController::class)->except('/');
 Route::resource('/egresos',EgresoController::class);
 Route::resource('/conceptos', ConceptoController::class);
-Route::resource('/alumnos', AlumnoController::class);
+Route::resource('/alumnos', AlumnoController::class);*/
 
 // Voy a buscar en base de dato latest para obtener el id. Solo una persona debe usar el sistema por vez.
 Route::get('/mail', function (){
