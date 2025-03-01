@@ -17,6 +17,8 @@ use Inertia\Inertia;
 
 
 Route::get('/alumnos', [AlumnoController::class, 'index']);
+Route::get('/alumnos/create', [AlumnoController::class, 'create']);
+Route::post('/alumnos', [AlumnoController::class, 'store']);
 
 Route::get('/ingresos', [IngresoController::class, 'index']);
 

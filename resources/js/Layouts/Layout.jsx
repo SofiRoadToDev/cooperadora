@@ -4,7 +4,9 @@ export default function Layout({ children }) {
     return (
         <>
             <Nav />
-            <main>{children}</main>
+            <main className="bg-leaflight  flex justify-center">
+                {children}
+            </main>
         </>
     );
 }
