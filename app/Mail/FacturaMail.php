@@ -14,12 +14,14 @@ class FacturaMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $ingreso;
+
     /**
      * Create a new message instance.
      */
     public function __construct(Ingreso $ingreso)
     {
-        //
+        $this->ingreso = $ingreso;
     }
 
     /**
@@ -39,11 +41,14 @@ class FacturaMail extends Mailable
     {
         return new Content(
             view: 'mails.factura',
+            with: [
+                'ingreso' => $this->ingreso,
+            ],
         );
     }
 
     /**
-     * Get the attachments for the message.
+     * Get the attachments for the message
      *
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */

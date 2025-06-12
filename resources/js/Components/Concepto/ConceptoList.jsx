@@ -9,8 +9,8 @@ function ConceptoList({ conceptos }) {
                 </tr>
             </thead>
             <tbody>
-                {conceptos &&
-                    conceptos.map((concepto) => (
+                {
+                   conceptos.map((concepto) => (
                         <tr class="border border-slate-600">
                             <td class="px-4 py-2 border border-slate-600">
                                 {concepto.nombre}

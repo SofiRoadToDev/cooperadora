@@ -2,10 +2,13 @@ import Layout from "@/Layouts/Layout";
 import EgresoList from "@/Components/Concepto/ConceptoList";
 import ConceptoList from "../Components/Concepto/ConceptoList";
 
-function Concepto() {
+function Concepto({ conceptos = []}) {
     return (
         <Layout>
-            <ConceptoList />
+            {conceptos.length > 0 ?
+                <ConceptoList  conceptos={conceptos}/>:
+                <span>No hay conceptos para mostrar</span>
+            }           
         </Layout>
     );
 }

@@ -22,7 +22,7 @@ class IngresoController extends Controller
     public function create()
     {   $conceptos = Concepto::all();
         $ingreso = new Ingreso();
-        return view('ingresos.create', compact('conceptos', 'ingreso'));
+        return Inertia('Ingresos/IngresoCreate', compact('conceptos', 'ingreso'));
     }
 
     /**
@@ -33,13 +33,17 @@ class IngresoController extends Controller
         
        
         $validator = Validator::make($request->all(), [
-            'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
-            'alumno_id' => 'required|exists:alumnos,id',
-            'conceptos' => 'required|array',
-            'conceptos.*id' => 'required|exists:concepto,id',
-            'importe_total' => 'required|numeric|min:1'
-        ]);
+        'fecha' => 'required|date',
+        'hora' => 'required|date_format:H:i',
+        'alumno_id' => 'required|exists:alumnos,id',
+        'conceptos' => 'required|array|min:1',
+        'conceptos.*.id' => 'required|exists:conceptos,id',
+        'conceptos.*.cantidad' => 'required|numeric|min:0.01',
+        'conceptos.*.total_concepto' => 'required|numeric|min:0.01',
+        'importe_total' => 'required|numeric|min:0.01',
+        'email' => 'nullable|email'
+    ]);
+
 
         if($validator->fails()){
             
@@ -68,6 +72,22 @@ class IngresoController extends Controller
         ->with('success', 'Ingreso creado exitosamente con conceptos asociados.');
     }
 
+    
+    public function buscarAlumno($dni)
+{
+    $alumno = Alumno::where('dni', $dni)->first();
+    
+    if ($alumno) {
+        return response()->json([
+            'id' => $alumno->id,
+            'nombre' => $alumno->nombre,
+            'apellido' => $alumno->apellido,
+            'email' => $alumno->email
+        ]);
+    }
+    
+    return response()->json(null, 404);
+}
     /**
      * Display the specified resource.
      */
