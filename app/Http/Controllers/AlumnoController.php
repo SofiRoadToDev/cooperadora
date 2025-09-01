@@ -20,13 +20,11 @@ class AlumnoController extends Controller
 
     public function create()
     {   $cursos = Curso::all();
-        $alumno = new Alumno();
-        return Inertia('Alumno/AlumnoCreate', compact('cursos', 'alumno'));
+        return Inertia('Alumno/AlumnoCreate', compact('cursos'));
     }
 
     public function store(Request $request)
     {     
-        dd($request->all()); 
         $validator = Validator::make($request->all(),[
             'apellido' => 'required|max:20',
             'nombre' => 'required|max:20',
@@ -34,8 +32,7 @@ class AlumnoController extends Controller
         ]);
 
         if($validator->fails()){
-            return redirect()
-                ->route('alumnos.create')
+            return redirect('/alumnos/create')
                 ->withErrors($validator)
                 ->withInput();
         }
@@ -53,7 +50,7 @@ class AlumnoController extends Controller
     public function edit(Alumno $alumno)
     { 
         $cursos = Curso::all();
-        return view('alumnos.create', compact('alumno', 'cursos'));
+        return Inertia('Alumno/AlumnoCreate', compact('alumno', 'cursos'));
     }
 
 

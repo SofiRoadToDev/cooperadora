@@ -1,6 +1,6 @@
 import React from "react";
 
-function IngresoList({ ingresos }) {
+function IngresoList({ ingresos = [] }) {
     return (
         <table className="mt-5">
             <thead>

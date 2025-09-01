@@ -1,34 +1,38 @@
-import React from "react";
 
+<<<<<<< HEAD
 function EgresoList({ egresos = [] }) {
+=======
+
+function EgresoList({ egresos = []}) {
+>>>>>>> 1ba139bfe203a2faec68059d7f328d06fa1533f9
     return (
-        <table class="mt-5">
+        <table className="mt-5">
             <thead>
-                <tr class="table-header">
-                    <th class="px-4 py-3 ">Fecha</th>
-                    <th class="px-4 py-3">concepto</th>
-                    <th class="px-4 py-3">Importe</th>
-                    <th class="px-4 py-3">solicitante</th>
-                    <th class="px-4 py-3">Acciones</th>
+                <tr className="table-header">
+                    <th className="px-4 py-3 ">Fecha</th>
+                    <th className="px-4 py-3">concepto</th>
+                    <th className="px-4 py-3">Importe</th>
+                    <th className="px-4 py-3">solicitante</th>
+                    <th className="px-4 py-3">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {egresos.length > 0 &&
                     egresos.map((egreso) => (
-                        <tr class="border border-slate-600">
-                            <td class="px-4 py-2 border border-slate-600">
-                                {$egreso.fecha}
+                        <tr className="border border-slate-600">
+                            <td className="px-4 py-2 border border-slate-600">
+                                {egreso.fecha}
                             </td>
-                            <td class="px-4 py-2 border border-slate-600">
-                                {$egreso.concepto.nombre}
+                            <td className="px-4 py-2 border border-slate-600">
+                                {egreso.concepto.nombre}
                             </td>
-                            <td class="px-4 py-2 border border-slate-600">
-                                {$egreso.importe}
+                            <td className="px-4 py-2 border border-slate-600">
+                                {egreso.importe}
                             </td>
-                            <td class="px-4 py-2 border border-slate-600">
+                            <td className="px-4 py-2 border border-slate-600">
                                 curso
                             </td>
-                            <td class="px-4 py-2 border border-slate-600">
+                            <td className="px-4 py-2 border border-slate-600">
                                 acciones
                             </td>
                         </tr>

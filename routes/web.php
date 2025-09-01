@@ -15,12 +15,19 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
+<<<<<<< HEAD
 Route::get('/', [IngresoController::class, 'index']);
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::get('/alumnos/create', [AlumnoController::class, 'create']);
 Route::post('/alumnos', [AlumnoController::class, 'store']);
+=======
+>>>>>>> 1ba139bfe203a2faec68059d7f328d06fa1533f9
 
-Route::get('/ingresos', [IngresoController::class, 'index']);
+Route::resource('/alumnos', AlumnoController::class);
+
+Route::resource('/ingresos', IngresoController::class);
+
+Route::get('/api/alumnos/buscar/{dni}', [IngresoController::class, 'buscarAlumno']);
 
 Route::get('/egresos', [EgresoController::class, 'index']);
 
@@ -32,18 +39,24 @@ Route::get('/conceptos', [ConceptoController::class, 'index']);
 
 /*Route::resource('/ingresos', IngresoController::class)->except('/');
 Route::resource('/egresos',EgresoController::class);
-Route::resource('/conceptos', ConceptoController::class);
-Route::resource('/alumnos', AlumnoController::class);*/
+Route::resource('/conceptos', ConceptoController::class);*/
 
 // Voy a buscar en base de dato latest para obtener el id. Solo una persona debe usar el sistema por vez.
 Route::get('/mail', function (){
-    $ingreso = Ingreso::latest()->first();
+    $ingreso = Ingreso::with(['alumno', 'conceptos'])->latest()->first();
     
     if(!$ingreso){
         return redirect()
                 ->route('ingresos.create')
-                ->with('Error', 'no ha brindado un email');
-    };
+                ->with('error', 'No se encontró ningún ingreso');
+    }
+    
+    if(!$ingreso->email || !filter_var($ingreso->email, FILTER_VALIDATE_EMAIL)){
+        return redirect()
+                ->route('ingresos.create')
+                ->with('error', 'Email no válido o no proporcionado');
+    }
+    
     Mail::to($ingreso->email)->send(new FacturaMail($ingreso));
 
     return redirect()
@@ -53,19 +66,17 @@ Route::get('/mail', function (){
 
 
 Route::get('/pdf', function () {
-   
-    //$ingreso = Ingreso::latest('id')->first();
-    $ingreso = Ingreso::find(1);
-    dd($ingreso);
+    $ingreso = Ingreso::with(['alumno', 'conceptos'])->latest()->first();
+    
     if(!$ingreso){
         return redirect()
                 ->route('ingresos.create')
-                ->with('error', 'ingreso no encontrado');
-    };
+                ->with('error', 'No se encontró ningún ingreso');
+    }
 
-    $factura = Pdf::loadView('pdf.factura',  compact('ingreso'));
+    $factura = Pdf::loadView('pdf.factura', compact('ingreso'));
 
-    return $factura->download();
+    return $factura->download('comprobante-' . $ingreso->id . '.pdf');
 })->name('pdfs.factura');
 
 
