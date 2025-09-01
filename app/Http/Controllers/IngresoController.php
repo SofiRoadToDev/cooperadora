@@ -22,7 +22,7 @@ class IngresoController extends Controller
     public function create()
     {   $conceptos = Concepto::all();
         $ingreso = new Ingreso();
-        return Inertia('Ingresos/IngresoCreate', compact('conceptos', 'ingreso'));
+        return Inertia('Ingreso/IngresoCreate', compact('conceptos', 'ingreso'));
     }
 
     /**

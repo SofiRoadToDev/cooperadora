@@ -14,7 +14,7 @@ class EgresoController extends Controller
     public function index()
     {
         $egresos = Egreso::all();
-        return Inertia('/Egreso/Egreso', compact('egresos'));
+        return Inertia('Egreso/Egreso', compact('egresos'));
 
     }
 
@@ -24,7 +24,7 @@ class EgresoController extends Controller
     public function create()
     {
         $egreso = new Egreso();
-        return view('egresos.create', compact('egreso'));
+        return Inertia('Egreso/EgresoCreate', compact('egreso'));
     }
 
     /**
