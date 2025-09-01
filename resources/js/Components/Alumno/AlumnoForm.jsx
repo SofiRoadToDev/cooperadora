@@ -10,11 +10,11 @@ function AlumnoForm({ cursos, alumno }) {
         apellido: "",
         nombre: "",
         dni: "",
-        curso: "",
+        curso: "", // Aseguramos que siempre tenga un valor definido
     };
 
     const { data, setData, post, put, delete: destroy, errors, processing } = useForm(
-        alumno ? alumno : emtyAlumno
+        alumno ? { ...alumno, curso: alumno.curso || "" } : emtyAlumno // Aseguramos que alumno.curso sea una cadena vacía si es null/undefined
     );
 
     const submit = (e) => {
@@ -127,7 +127,7 @@ function AlumnoForm({ cursos, alumno }) {
                 onChange={(e) => setData("curso", e.target.value)}
             >
                 {cursos.map((curso) => (
-                    <option value={curso.codigo}>{curso.codigo}</option>
+                    <option key={curso.codigo} value={curso.codigo}>{curso.codigo}</option>
                 ))}
             </select>
             <button

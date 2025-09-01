@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import Dialog from '@/Components/Dialog';
 
-function AlumnoList({ alumnos }) {
+function AlumnoList({ alumnos = [] }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedAlumno, setSelectedAlumno] = useState(null);
     const { delete: destroy } = useForm();
@@ -24,7 +24,7 @@ function AlumnoList({ alumnos }) {
         <>
         <table className="mt-5">
             <thead>
-                <tr className="table-header">
+                <tr  className="table-header">
                     <th className="px-4 py-3 ">Apellido</th>
                     <th className="px-4 py-3">Nombre</th>
                     <th className="px-4 py-3">DNI</th>
@@ -33,9 +33,9 @@ function AlumnoList({ alumnos }) {
                 </tr>
             </thead>
             <tbody>
-                {alumnos &&
+                {alumnos.length > 0 &&
                     alumnos.map((alumno) => (
-                        <tr className="border border-slate-600 bg-leaflighest">
+                        <tr key={alumno.id} className="border border-slate-600 bg-leaflighest">
                             <td className="px-4 py-2 border border-slate-600">
                                 {alumno.apellido}
                             </td>
