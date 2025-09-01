@@ -1,10 +1,7 @@
 
-<<<<<<< HEAD
-function EgresoList({ egresos = [] }) {
-=======
 
-function EgresoList({ egresos = []}) {
->>>>>>> 1ba139bfe203a2faec68059d7f328d06fa1533f9
+function EgresoList({ egresos = [] }) {
+
     return (
         <table className="mt-5">
             <thead>

@@ -6,7 +6,6 @@ use App\Http\Controllers\ConceptoController;
 use App\Http\Controllers\EgresoController;
 use App\Http\Controllers\IngresoController;
 use App\Mail\FacturaMail;
-use App\Models\Alumno;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Ingreso;
@@ -15,13 +14,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
-<<<<<<< HEAD
+
 Route::get('/', [IngresoController::class, 'index']);
-Route::get('/alumnos', [AlumnoController::class, 'index']);
-Route::get('/alumnos/create', [AlumnoController::class, 'create']);
-Route::post('/alumnos', [AlumnoController::class, 'store']);
-=======
->>>>>>> 1ba139bfe203a2faec68059d7f328d06fa1533f9
+
 
 Route::resource('/alumnos', AlumnoController::class);
 
@@ -29,10 +24,9 @@ Route::resource('/ingresos', IngresoController::class);
 
 Route::get('/api/alumnos/buscar/{dni}', [IngresoController::class, 'buscarAlumno']);
 
-Route::get('/egresos', [EgresoController::class, 'index']);
+Route::resource('/egresos', EgresoController::class);
 
-
-Route::get('/conceptos', [ConceptoController::class, 'index']);
+Route::resource('/conceptos', ConceptoController::class);
 
 
 

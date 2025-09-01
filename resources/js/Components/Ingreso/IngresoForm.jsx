@@ -34,8 +34,8 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                 dni: ingreso.alumno?.dni || '',
                 alumno_id: ingreso.alumno_id,
                 alumno: ingreso.alumno?.nombre || '',
-                email: ingreso.email,
-                importe_total: ingreso.importe_total
+                email: ingreso.email || '',
+                importe_total: ingreso.importe_total || 0
             });
             
             if (ingreso.conceptos && ingreso.conceptos.length > 0) {
@@ -129,7 +129,10 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                 if (field === 'concepto_id' || field === 'cantidad') {
                     const concepto = conceptos.find(c => c.id == updatedBlock.concepto_id);
                     if (concepto && updatedBlock.cantidad) {
-                        updatedBlock.total_concepto = (concepto.importe * parseFloat(updatedBlock.cantidad)).toFixed(2);
+                        const importe = concepto.importe || 0;
+                        updatedBlock.total_concepto = (importe * parseFloat(updatedBlock.cantidad)).toFixed(2);
+                    } else {
+                        updatedBlock.total_concepto = '';
                     }
                 }
                 
