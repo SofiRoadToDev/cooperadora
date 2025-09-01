@@ -14,7 +14,7 @@ class ConceptoController extends Controller
     {
         $conceptos = Concepto::all();
         
-        return Inertia('Concepto', compact('conceptos'));
+        return Inertia('Concepto/Concepto', compact('conceptos'));
     }
 
 

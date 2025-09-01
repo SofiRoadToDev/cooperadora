@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Ingreso;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Inertia\Inertia;
 
 
 
 
+Route::get('/', [IngresoController::class, 'index']);
 Route::get('/alumnos', [AlumnoController::class, 'index']);
 Route::get('/alumnos/create', [AlumnoController::class, 'create']);
 Route::post('/alumnos', [AlumnoController::class, 'store']);

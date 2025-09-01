@@ -1,6 +1,6 @@
 import React from "react";
 
-function EgresoList({ egresos }) {
+function EgresoList({ egresos = [] }) {
     return (
         <table class="mt-5">
             <thead>
@@ -13,7 +13,7 @@ function EgresoList({ egresos }) {
                 </tr>
             </thead>
             <tbody>
-                {egresos &&
+                {egresos.length > 0 &&
                     egresos.map((egreso) => (
                         <tr class="border border-slate-600">
                             <td class="px-4 py-2 border border-slate-600">

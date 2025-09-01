@@ -4,7 +4,7 @@ export default function Layout({ children }) {
     return (
         <>
             <Nav />
-            <main className="bg-leaflight  flex justify-center">
+            <main className="bg-leaflight  flex justify-center h-screen">
                 {children}
             </main>
         </>

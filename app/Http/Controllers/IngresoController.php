@@ -15,7 +15,7 @@ class IngresoController extends Controller
     public function index()
     {
         $ingresos = Ingreso::orderBy('fecha', 'desc')->get();
-        return Inertia('Ingreso', compact('ingresos'));
+        return Inertia('Ingreso/Ingreso', compact('ingresos'));
     }
 
 
