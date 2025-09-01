@@ -7,7 +7,6 @@ function ConceptoForm() {
 
     const submit = (e) => {
         e.preventDefault();
-
         post("/conceptos");
     };
     return (
