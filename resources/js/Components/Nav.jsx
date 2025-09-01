@@ -18,7 +18,6 @@ function Nav() {
                         <Link href="/conceptos">Conceptos</Link>
                     </li>
                     <li className="hover:bg-leafmedium  p-3">
-                        <a href="/#">Informes</a>
                         <Link href="/informes">Informes</Link>
                     </li>
                 </ul>

@@ -26,9 +26,10 @@ class ConceptoController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request->all());
         $validator = Validator::make($request->all(), [
             'nombre' => 'required',
-            'importe' => 'required'
+            'importe' => 'required|numeric'
         ]);
 
         if($validator->fails()){
@@ -38,7 +39,7 @@ class ConceptoController extends Controller
                 ->withInput();
         }
 
-        Concepto::create($request->all());
+        Concepto::create($validator->validated());
         return redirect()
                 ->route('conceptos.index')
                 ->with('success', 'Concepto creado correctamente');
@@ -53,7 +54,7 @@ class ConceptoController extends Controller
 
     public function edit(Concepto $concepto)
     {
-        return view('conceptos.create', compact($concepto));
+        return Inertia::render('Concepto/ConceptoCreate', compact('concepto'));
     }
 
     /**
@@ -63,7 +64,7 @@ class ConceptoController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nombre' => 'required',
-            'importe' => 'required'
+            'importe' => 'required|numeric'
         ]);
 
         if($validator->fails()){
@@ -73,7 +74,7 @@ class ConceptoController extends Controller
                 ->withInput();
         }
 
-        $concepto->update($request->only(['nombre', 'importe']));
+        $concepto->update($validator->validated());
 
         return redirect()
                 ->route('conceptos.index')
@@ -83,12 +84,6 @@ class ConceptoController extends Controller
 
     public function destroy(Concepto $concepto)
     {
-        if(!isset($concepto)){
-            return redirect()
-                ->route('conceptos.index')
-                ->with('error', 'concepto inexistente');
-        };
-
         $concepto->delete();
 
         return redirect()

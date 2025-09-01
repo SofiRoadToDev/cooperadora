@@ -2,10 +2,10 @@ import Layout from "@/Layouts/Layout";
 import ConceptoForm from "@/Components/Concepto/ConceptoForm";
 
 
-function ConceptoCreate() {
+function ConceptoCreate({conceptos}) {
   return (
     <Layout>
-        <ConceptoForm></ConceptoForm>
+        <ConceptoForm conceptos={conceptos} />
     </Layout>
   )
 }
