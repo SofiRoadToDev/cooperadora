@@ -20,7 +20,7 @@ class ConceptoController extends Controller
 
     public function create()
     {   $concepto = new Concepto();
-        return view('conceptos.create', compact('concepto'));
+        return Inertia::render('Concepto/ConceptoCreate', compact('concepto'));
     }
 
 

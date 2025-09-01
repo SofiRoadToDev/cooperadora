@@ -1,3 +1,4 @@
+import { useForm } from "@inertiajs/react";
 function ConceptoForm() {
     const { data, setData, errors, processing, post } = useForm({
         nombre: "",

@@ -215,7 +215,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                 </div>
                 
                 <div className="grid grid-cols-2 gap-1">
-                    <a href="alumnos/create" className="bg-leafdarkest text-white w-full mt-8 mb-1 text-center py-1">
+                    <a href="/alumnos/create" className="bg-leafdarkest text-white w-full mt-8 mb-1 text-center py-1">
                         Nuevo
                     </a>
                     <button 
