@@ -13,7 +13,8 @@ class AlumnoController extends Controller
 
     public function index()
     {
-        $alumnos = Alumno::all();
+        // Eager load la relación 'curso' para evitar problemas N+1
+        $alumnos = Alumno::with('curso')->get();
         return Inertia('Alumno/Alumno', compact('alumnos'));
     }
 
@@ -28,7 +29,8 @@ class AlumnoController extends Controller
         $validator = Validator::make($request->all(),[
             'apellido' => 'required|max:20',
             'nombre' => 'required|max:20',
-            'dni' => 'required|max:8'
+            'dni' => 'required|max:8',
+            'curso_codigo' => 'required|exists:cursos,codigo' // Validar que el curso exista por su código
         ]);
 
         if($validator->fails()){
@@ -36,9 +38,11 @@ class AlumnoController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
-        Alumno::create($request->all());
-         return redirect('/alumnos')
+        
+       
+        Alumno::create($validator->validated());
+        
+        return redirect('/alumnos')
             ->with('success', 'ALumno creado exitosamente');
     }
 
@@ -59,31 +63,35 @@ class AlumnoController extends Controller
              $validator = Validator::make($request->all(),[
             'apellido' => 'required|max:20',
             'nombre' => 'required|max:20',
-            'dni' => 'required|max:8'
+            'dni' => 'required|max:8',
+            'curso_codigo' => 'required|exists:cursos,codigo' 
+            /* Validar que el curso exista 
+                'nombre_del_campo' => 'exists:nombre_de_la_tabla,nombre_de_la_columna'.
+                el nombre del campo es el de la base de datos y el name del form debe corresponder
+                Al crear la relacion en el modelo laravel asume que existe la fk con forma tabla_id
+            */
         ]);
 
         if($validator->fails()){
-            return redirect()
-                ->route('alumnos.edit')
+            return redirect()->back() // Redirigir a la página anterior
                 ->withErrors($validator)
                 ->withInput();
         }
 
-        $alumno->update($request->only(['apellido', 'nombre', 'dni']));
+        $alumno->update($validator->validated());
         
          return redirect()
             ->route('alumnos.index')
-            ->with('success', 'ALumno creado exitosamente');
+            ->with('success', 'Alumno actualizado exitosamente');
     }
 
     public function destroy(Alumno $alumno)
     {   
-        if(!isset($alumno)){
-           return redirect()->route('alumnos.index')->with('Error', 'Alumno no existente');
-        };
-         Alumno::destroy($alumno->id);
-            return redirect()
-                    ->route('alumnos.index')
-                    ->with('success', 'Alumno borrado correctamente');
+        // El Route-Model-Binding ya se encarga de verificar si el alumno existe.
+        // Si no existe, Laravel arrojará un 404 automáticamente.
+        $alumno->delete();
+        return redirect()
+                ->route('alumnos.index')
+                ->with('success', 'Alumno borrado correctamente');
     }
 }

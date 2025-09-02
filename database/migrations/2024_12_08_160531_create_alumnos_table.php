@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('nombre', 20);
             $table->string('apellido', 20);
             $table->string('dni', 8);
-            $table->unsignedBigInteger('curso')->nullable();
-            $table->foreign('curso')->references('codigo')
+            $table->foreign('curso_codigo')->references('codigo')
                 ->on('cursos')
                 ->onDelete('set null')
                 ->onUpdate('cascade');

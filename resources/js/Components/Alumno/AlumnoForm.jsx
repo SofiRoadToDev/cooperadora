@@ -7,14 +7,14 @@ function AlumnoForm({ cursos, alumno }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [alert, setAlert] = useState({ show: false, type: '', message: '' });
     const emtyAlumno = {
-        apellido: "",
-        nombre: "",
-        dni: "",
-        curso: "", // Aseguramos que siempre tenga un valor definido
+        apellido: '',
+        nombre: '',
+        dni: '',
+        curso_codigo: '', 
     };
 
     const { data, setData, post, put, delete: destroy, errors, processing } = useForm(
-        alumno ? { ...alumno, curso: alumno.curso || "" } : emtyAlumno // Aseguramos que alumno.curso sea una cadena vacía si es null/undefined
+        alumno ? { ...alumno, curso_codigo: alumno.curso_codigo || '' } : emtyAlumno
     );
 
     const submit = (e) => {
@@ -68,11 +68,14 @@ function AlumnoForm({ cursos, alumno }) {
     };
 
     return (
+        
         <form
+        
             onSubmit={submit}
             className="flex flex-col p-6 bg-leaflighest shadow-md w-1/2"
             method="POST"
         >
+              {console.log('cursos ',cursos)}
             <h3 className="text-center py-4 text-xl text-white p-3 bg-leafdarkest mb-4">
                 {alumno ? "Actualizar alumno" : "Crear alumno"}
             </h3>
@@ -121,13 +124,16 @@ function AlumnoForm({ cursos, alumno }) {
 
             <label htmlFor="curso">Curso</label>
             <select
-                value={data.curso}
+            
+                name="curso_codigo"
+                value={data.curso_codigo}
                 id="curso"
                 className="w-1/2 py-1 border border-slate-600 bg-white p-2"
-                onChange={(e) => setData("curso", e.target.value)}
+                onChange={(e) => setData("curso_codigo", e.target.value)}
             >
+                <option value="">Seleccione un curso</option>
                 {cursos.map((curso) => (
-                    <option key={curso.codigo} value={curso.codigo}>{curso.codigo}</option>
+                    <option  key={curso.codigo} value={curso.codigo}>{curso.nombre}</option>
                 ))}
             </select>
             <button

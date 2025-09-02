@@ -46,7 +46,7 @@ function AlumnoList({ alumnos = [] }) {
                                 {alumno.dni}
                             </td>
                             <td className="px-4 py-2 border border-slate-600">
-                                curso
+                                {alumno.curso ? alumno.curso.nombre : 'Sin curso'}
                             </td>
                             <td className="px-4 py-2 border border-slate-600">
                                 <div className="flex gap-2">

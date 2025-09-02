@@ -9,7 +9,8 @@ export default function Alumno({ alumnos }) {
                 <button className="bg-black text-white py-2 px-3 rounded-sm mt-3 w-1/2 mx-auto">
                     <Link href="alumnos/create">Nuevo</Link>
                 </button>
-                <AlumnoList alumnos={alumnos} />
+                {alumnos.length > 0 ? <AlumnoList alumnos={alumnos} />
+                    : <span>No hay alumnos registrados</span>}
             </div>
         </Layout>
     );

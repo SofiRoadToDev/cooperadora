@@ -9,7 +9,10 @@ function Concepto({conceptos}) {
                 <button className="bg-black text-white py-2 px-3 rounded-sm mt-3 w-1/2 mx-auto">
                     <Link href="conceptos/create">Nuevo</Link>
                 </button>
-                <ConceptoList conceptos={conceptos} />
+                {conceptos.length > 0 ? <ConceptoList conceptos={conceptos} /> :
+                    <span>No hay conceptos registrados</span>
+                }
+              
             </div>
         </Layout>
     );
