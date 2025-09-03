@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Egreso;
+use App\Models\Categoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class EgresoController extends Controller
@@ -23,8 +25,8 @@ class EgresoController extends Controller
      */
     public function create()
     {
-        $egreso = new Egreso();
-        return Inertia('Egreso/EgresoCreate', compact('egreso'));
+        $categorias = Categoria::all();
+        return Inertia('Egreso/EgresoCreate', compact('categorias'));
     }
 
     /**
@@ -32,7 +34,31 @@ class EgresoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'fecha' => 'required',
+            'hora' => 'required',
+            'categoria_id' => 'required|exists:categorias,id',
+            'concepto' => 'required',
+            'importe' => 'required|numeric',
+            'solicitante' => 'required',
+            'empresa' => 'nullable',
+            'tipo_comprobante' => 'nullable',
+            'numero_comprobante' => 'nullable',
+            'observaciones' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route('egresos.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        Egreso::create($validator->validated());
+
+        return redirect()
+            ->route('egresos.index')
+            ->with('success', 'Egreso creado exitosamente');
     }
 
     /**
@@ -48,7 +74,8 @@ class EgresoController extends Controller
      */
     public function edit(Egreso $egreso)
     {
-        return view('egresos.create', compact($egreso));
+        $categorias = Categoria::all();
+        return Inertia('Egreso/EgresoCreate', compact('egreso', 'categorias'));
     }
 
     /**
@@ -56,7 +83,30 @@ class EgresoController extends Controller
      */
     public function update(Request $request, Egreso $egreso)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'fecha' => 'required',
+            'hora' => 'required',
+            'categoria_id' => 'required|exists:categorias,id',
+            'concepto' => 'required',
+            'importe' => 'required|numeric',
+            'solicitante' => 'required',
+            'empresa' => 'nullable',
+            'tipo_comprobante' => 'nullable',
+            'numero_comprobante' => 'nullable',
+            'observaciones' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $egreso->update($validator->validated());
+
+        return redirect()
+            ->route('egresos.index')
+            ->with('success', 'Egreso actualizado exitosamente');
     }
 
     /**
@@ -64,6 +114,10 @@ class EgresoController extends Controller
      */
     public function destroy(Egreso $egreso)
     {
-        //
+        $egreso->delete();
+
+        return redirect()
+            ->route('egresos.index')
+            ->with('success', 'Egreso eliminado exitosamente');
     }
 }

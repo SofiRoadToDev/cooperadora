@@ -16,10 +16,8 @@ return new class extends Migration
             $table->string('nombre', 20);
             $table->string('apellido', 20);
             $table->string('dni', 8);
-            $table->foreign('curso_codigo')->references('codigo')
-                ->on('cursos')
-                ->onDelete('set null')
-                ->onUpdate('cascade');
+            $table->string('curso')->nullable();
+            $table->foreign('curso', 'fk_alumnos_curso')->references('codigo')->on('cursos')->onDelete('set null')->onUpdate('cascade');
             $table->timestamps();
         });
     }

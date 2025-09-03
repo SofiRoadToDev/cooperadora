@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
             $table->date('fecha');
             $table->time('hora');
-            $table->string('categoria');
-            $table->unsignedBigInteger('id_concepto');
+            $table->unsignedBigInteger('categoria_id')->nullable();
+            $table->string('concepto');
             $table->decimal('importe', 8,2);
             $table->string('empresa')->nullable();
             $table->enum('tipo_comprobante', ['ticket', 'factura', 'presupuesto', 'nota', 'firma', 'papel', 'otro']);
             $table->string('numero_comprobante')->nullable();
             $table->string('solicitante');
             $table->text('observaciones')->nullable();
-            $table->foreign('id_concepto')->references('id')->on('conceptos')->onDelete('set null');
+            $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('set null');
             $table->timestamps();
         });
     }

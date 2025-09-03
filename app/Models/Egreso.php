@@ -8,14 +8,18 @@ class Egreso extends Model
 {
     protected $fillable = [
         'fecha',
-         'hora',
-          'categoria',
-           'importe',
-            'id_concepto',
-            'solicitante',
-             'observaciones'];
-
-    public function concepto(){
-        return $this->hasOne(Concepto::class);
+        'hora',
+        'categoria_id',
+        'concepto',
+        'importe',
+        'solicitante',
+        'empresa',
+        'tipo_comprobante',
+        'numero_comprobante',
+        'observaciones'
+    ];
+    
+    public function categoria(){
+        return $this->belongsTo(Categoria::class);
     }
 }

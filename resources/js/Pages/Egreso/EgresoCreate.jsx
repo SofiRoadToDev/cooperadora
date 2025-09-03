@@ -2,10 +2,10 @@ import Layout from '@/Layouts/Layout'
 import EgresoForm from '@/Components/Egreso/EgresoForm'
 
 
-function EgresoCreate({egresos}) {
+function EgresoCreate({categorias, egreso}) {
   return (
    <Layout>
-        <EgresoForm egresos = {egresos}/>
+        <EgresoForm categorias={categorias} egreso={egreso} />
    </Layout>
   )
 }

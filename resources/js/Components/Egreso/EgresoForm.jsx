@@ -18,6 +18,8 @@ function EgresoForm({categorias = [], egreso}) {
         importe: "",
         solicitante: "",
         empresa: "",
+        tipo_comprobante: "",
+        numero_comprobante: "",
         observaciones: "",
     };
 
@@ -123,22 +125,30 @@ function EgresoForm({categorias = [], egreso}) {
                 <label for="concepto">Número comprobante</label>
                 <input
                     type="text"
+                    name="concepto"
+                    value={data.concepto}
+                    onChange={(e) => setData("concepto", e.target.value)}
                     className="my-2 border border-slate-600 p-1"
                 ></input>
                 <select
-                    name="concepto"
-                    id="concepto"
+                    name="tipo_comprobante"
+                    id="tipo_comprobante"
+                    value={data.tipo_comprobante}
+                    onChange={(e) => setData("tipo_comprobante", e.target.value)}
                     className="border my-2 border-slate-600 bg-white px-2 "
                 >
                     <option value="">Ticket</option>
-                    <option value="">Factura</option>
-                    <option value="">Remito</option>
-                    <option value="">Nota</option>
-                    <option value="">Presupuesto</option>
-                    <option value="">Otro</option>
+                    <option value="factura">Factura</option>
+                    <option value="remito">Remito</option>
+                    <option value="nota">Nota</option>
+                    <option value="presupuesto">Presupuesto</option>
+                    <option value="otro">Otro</option>
                 </select>
                 <input
                     type="text"
+                    name="numero_comprobante"
+                    value={data.numero_comprobante}
+                    onChange={(e) => setData("numero_comprobante", e.target.value)}
                     className="my-2 border border-slate-600 p-1"
                 ></input>
                 <label for="concepto">Importe</label>
@@ -147,12 +157,14 @@ function EgresoForm({categorias = [], egreso}) {
                 </label>
                 <input
                     type="text"
+                    name="importe"
                     value={data.importe}
                     onChange={(e) => setData("importe", e.target.value)}
                     className="my-2 border border-slate-600 p-1"
                 ></input>
                 <input
                     type="text"
+                    name="solicitante"
                     value={data.solicitante}
                     onChange={(e) => setData("solicitante", e.target.value)}
                     className="my-2 border border-slate-600 p-1 col-span-2"
@@ -165,12 +177,14 @@ function EgresoForm({categorias = [], egreso}) {
                 </label>
                 <input
                     type="text"
+                    name="empresa"
                     value={data.empresa}
                     onChange={(e) => setData("empresa", e.target.value)}
                     className="my-2 border border-slate-600 p-1 h-1/3"
                 ></input>
                 <textarea
                     type="text"
+                    name="observaciones"
                     rows="3"
                     value={data.observaciones}
                     onChange={(e) => setData("observaciones", e.target.value)}
