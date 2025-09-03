@@ -10,11 +10,11 @@ function AlumnoForm({ cursos, alumno }) {
         apellido: '',
         nombre: '',
         dni: '',
-        curso_codigo: '', 
+        curso: '', 
     };
 
     const { data, setData, post, put, delete: destroy, errors, processing } = useForm(
-        alumno ? { ...alumno, curso_codigo: alumno.curso_codigo || '' } : emtyAlumno
+        alumno ? { ...alumno, curso: alumno.curso || '' } : emtyAlumno
     );
 
     const submit = (e) => {
@@ -75,7 +75,6 @@ function AlumnoForm({ cursos, alumno }) {
             className="flex flex-col p-6 bg-leaflighest shadow-md w-1/2"
             method="POST"
         >
-              {console.log('cursos ',cursos)}
             <h3 className="text-center py-4 text-xl text-white p-3 bg-leafdarkest mb-4">
                 {alumno ? "Actualizar alumno" : "Crear alumno"}
             </h3>
@@ -125,16 +124,22 @@ function AlumnoForm({ cursos, alumno }) {
             <label htmlFor="curso">Curso</label>
             <select
             
-                name="curso_codigo"
-                value={data.curso_codigo}
+                name="curso"
+                value={data.curso}
                 id="curso"
                 className="w-1/2 py-1 border border-slate-600 bg-white p-2"
-                onChange={(e) => setData("curso_codigo", e.target.value)}
+                onChange={(e) => setData("curso", e.target.value)}
             >
                 <option value="">Seleccione un curso</option>
-                {cursos.map((curso) => (
-                    <option  key={curso.codigo} value={curso.codigo}>{curso.nombre}</option>
-                ))}
+                {Array.isArray(cursos) && cursos.length > 0 ? (
+                    cursos.map((curso) => (
+                        <option key={curso.codigo} value={curso.codigo}>
+                            {curso.nombre}
+                        </option>
+                    ))
+                ) : (
+                    <option disabled>No hay cursos disponibles</option>
+                )}
             </select>
             <button
                 className="leaf-btn-main mt-5"

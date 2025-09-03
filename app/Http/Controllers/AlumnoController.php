@@ -20,7 +20,8 @@ class AlumnoController extends Controller
 
 
     public function create()
-    {   $cursos = Curso::all();
+    {   
+        $cursos = Curso::all();
         return Inertia('Alumno/AlumnoCreate', compact('cursos'));
     }
 
@@ -30,7 +31,7 @@ class AlumnoController extends Controller
             'apellido' => 'required|max:20',
             'nombre' => 'required|max:20',
             'dni' => 'required|max:8',
-            'curso_codigo' => 'required|exists:cursos,codigo' // Validar que el curso exista por su código
+            'curso' => 'required|exists:cursos,codigo' // Validar que el curso exista por su código
         ]);
 
         if($validator->fails()){
@@ -64,7 +65,7 @@ class AlumnoController extends Controller
             'apellido' => 'required|max:20',
             'nombre' => 'required|max:20',
             'dni' => 'required|max:8',
-            'curso_codigo' => 'required|exists:cursos,codigo' 
+            'curso' => 'required|exists:cursos,codigo' 
             /* Validar que el curso exista 
                 'nombre_del_campo' => 'exists:nombre_de_la_tabla,nombre_de_la_columna'.
                 el nombre del campo es el de la base de datos y el name del form debe corresponder

@@ -1,22 +1,83 @@
+import { useState } from 'react';
 import { useForm } from "@inertiajs/react";
+import Alert from '../Alert';
 
-function EgresoForm() {
-    const { data, setData, processing, errors, post } = useForm({
-        fecha: "",
-        hora: "",
-        categoria: "",
+function EgresoForm({categorias = [], egreso}) {
+    const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+    
+    // Obtener fecha y hora actual solo si no hay egreso
+    const now = new Date();
+    const fechaActual = now.toLocaleDateString('es-AR'); // dd/mm/yyyy
+    const horaActual = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+
+    const emptyEgreso = {
+        fecha: fechaActual,
+        hora: horaActual,
+        categoria_id: "",
         concepto: "",
-        importe: 0.0,
-        solicitente: "",
+        importe: "",
+        solicitante: "",
         empresa: "",
         observaciones: "",
-    });
+    };
+
+    const { data, setData, processing, errors, post, put } = useForm(
+        egreso ? { ...egreso } : emptyEgreso
+    );
+
+    const submit = (e) => {
+        e.preventDefault();
+        if (egreso) {
+            put(`/egresos/${egreso.id}`, {
+                onSuccess: () => {
+                    setAlert({
+                        show: true,
+                        type: 'success',
+                        message: 'Egreso actualizado exitosamente'
+                    });
+                },
+                onError: () => {
+                    setAlert({
+                        show: true,
+                        type: 'error',
+                        message: 'Error al actualizar el egreso'
+                    });
+                }
+            });
+        } else {
+            post("/egresos", {
+                onSuccess: () => {
+                    setAlert({
+                        show: true,
+                        type: 'success',
+                        message: 'Egreso creado exitosamente'
+                    });
+                },
+                onError: () => {
+                    setAlert({
+                        show: true,
+                        type: 'error',
+                        message: 'Error al crear el egreso'
+                    });
+                }
+            });
+        }
+    };
+
     return (
         <form
+            onSubmit={submit}
             className="flex flex-col bg-leaflighest p-5 shadow-md w-1/2 mb-5"
             method="POST"
         >
-            <h3 className="form-header">Nuevo Egreso</h3>
+            <h3 className="form-header">{egreso ? "Actualizar Egreso" : "Nuevo Egreso"}</h3>
+            
+            <Alert
+                type={alert.type}
+                message={alert.message}
+                show={alert.show}
+                onClose={() => setAlert({ show: false, type: '', message: '' })}
+            />
 
             <div className="grid grid-cols-3 grid-rows-1 gap-3">
                 <label for="fecha">Fecha</label>
@@ -24,7 +85,8 @@ function EgresoForm() {
                 <label for="categoria">Categoria</label>
 
                 <input
-                    type="date"
+                    type="text"
+                    placeholder="dd/mm/yyyy"
                     className="my-2 border border-slate-600 p-1"
                     name="fecha"
                     onChange={(e) => setData("fecha", e.target.value)}
@@ -32,21 +94,29 @@ function EgresoForm() {
                 >
                 </input>
                 <input
-                    type="datetime"
+                    type="time"
                     className="my-2 border border-slate-600 p-1"
                     name="hora"
                     onChange={(e) => setData("hora", e.target.value)}
-                    disabled
                     value={data.hora}
                 ></input>
                 <select
-                    name="categoria"
+                    name="categoria_id"
                     id="categoria"
-                    onChange={(e) => setData("fecha", e.target.value)}
-                    value={data.categoria}
-                    className="border my-2 border-slate-600 bg-white px-2  "
+                    onChange={(e) => setData("categoria_id", e.target.value)}
+                    value={data.categoria_id}
+                    className="border my-2 border-slate-600 bg-white px-2"
                 >
-                    <option value="">Talleres</option>
+                    <option value="">Seleccione una categoría</option>
+                    {Array.isArray(categorias) && categorias.length > 0 ? (
+                        categorias.map((categoria) => (
+                            <option key={categoria.id} value={categoria.id}>
+                                {categoria.nombre}
+                            </option>
+                        ))
+                    ) : (
+                        <option disabled>No hay categorías disponibles</option>
+                    )}
                 </select>
                 <label for="concepto">Concepto</label>
                 <label for="concepto">Tipo comprobante</label>
@@ -108,7 +178,7 @@ function EgresoForm() {
                 ></textarea>
             </div>
             <button className="leaf-btn-main" type="submit" disabled={processing}>
-                Enviar
+                {egreso ? "Actualizar" : "Crear"}
             </button>
         </form>
     );

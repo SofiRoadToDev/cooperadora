@@ -1,13 +1,55 @@
+import { useState } from 'react';
 import { useForm } from "@inertiajs/react";
-function ConceptoForm() {
-    const { data, setData, errors, processing, post } = useForm({
+import Alert from '../Alert';
+
+function ConceptoForm({ concepto }) {
+    const [alert, setAlert] = useState({ show: false, type: '', message: '' });
+    const emptyConcepto = {
         nombre: "",
-        importe: 0.0,
-    });
+        importe: "",
+    };
+
+    const { data, setData, post, put, errors, processing } = useForm(
+        concepto ? { ...concepto } : emptyConcepto
+    );
 
     const submit = (e) => {
         e.preventDefault();
-        post("/conceptos");
+        if (concepto) {
+            put(`/conceptos/${concepto.id}`, {
+                onSuccess: () => {
+                    setAlert({
+                        show: true,
+                        type: 'success',
+                        message: 'Concepto actualizado exitosamente'
+                    });
+                },
+                onError: () => {
+                    setAlert({
+                        show: true,
+                        type: 'error',
+                        message: 'Error al actualizar el concepto'
+                    });
+                }
+            });
+        } else {
+            post("/conceptos", {
+                onSuccess: () => {
+                    setAlert({
+                        show: true,
+                        type: 'success',
+                        message: 'Concepto creado exitosamente'
+                    });
+                },
+                onError: () => {
+                    setAlert({
+                        show: true,
+                        type: 'error',
+                        message: 'Error al crear el concepto'
+                    });
+                }
+            });
+        }
     };
     return (
         <form
@@ -16,8 +58,15 @@ function ConceptoForm() {
             method="POST"
         >
             <h3 className="text-center py-4 text-white text-xl bg-leafdarkest mb-4">
-                Nuevo Concepto
+                {concepto ? "Actualizar Concepto" : "Nuevo Concepto"}
             </h3>
+            
+            <Alert
+                type={alert.type}
+                message={alert.message}
+                show={alert.show}
+                onClose={() => setAlert({ show: false, type: '', message: '' })}
+            />
 
             <div className="grid grid-cols-2  grid-rows-1 gap-3">
                 <label htmlFor="nombre" className="mx-auto">
@@ -46,7 +95,7 @@ function ConceptoForm() {
                 type="submit"
                 disabled={processing}
             >
-                Enviar
+                {concepto ? "Actualizar" : "Crear"}
             </button>
         </form>
     );

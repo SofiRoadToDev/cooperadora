@@ -22,6 +22,7 @@ function AlumnoList({ alumnos = [] }) {
 
     return (
         <>
+        {console.log(alumnos[0].curso)}
         <table className="mt-5">
             <thead>
                 <tr  className="table-header">

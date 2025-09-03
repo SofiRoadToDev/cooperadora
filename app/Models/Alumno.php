@@ -11,7 +11,7 @@ class Alumno extends Model
     protected $table = 'alumnos';
 
     public function curso(){
-        return $this->belongsTo(Curso::class);
+        return $this->belongsTo(Curso::class, 'curso', 'codigo');
     }
 
     public function ingresos(){
