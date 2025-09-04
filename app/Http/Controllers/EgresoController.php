@@ -15,7 +15,7 @@ class EgresoController extends Controller
      */
     public function index()
     {
-        $egresos = Egreso::all();
+        $egresos = Egreso::with('categoria')->get();
         return Inertia('Egreso/Egreso', compact('egresos'));
 
     }

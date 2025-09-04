@@ -137,11 +137,13 @@ function EgresoForm({categorias = [], egreso}) {
                     onChange={(e) => setData("tipo_comprobante", e.target.value)}
                     className="border my-2 border-slate-600 bg-white px-2 "
                 >
-                    <option value="">Ticket</option>
+                    <option value="">Seleccione tipo</option>
+                    <option value="ticket">Ticket</option>
                     <option value="factura">Factura</option>
-                    <option value="remito">Remito</option>
-                    <option value="nota">Nota</option>
                     <option value="presupuesto">Presupuesto</option>
+                    <option value="nota">Nota</option>
+                    <option value="firma">Firma</option>
+                    <option value="papel">Papel</option>
                     <option value="otro">Otro</option>
                 </select>
                 <input

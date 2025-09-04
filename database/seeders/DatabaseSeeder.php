@@ -26,6 +26,10 @@ class DatabaseSeeder extends Seeder
             ['codigo'=> '13cbt', 'nivel' => 1, 'division' => 3, 'ciclo' => 'basico', 'turno' => 'tarde'],
         ];
  
-        Curso::insert($cursos);
+        foreach ($cursos as $curso) {
+            Curso::updateOrCreate(['codigo' => $curso['codigo']], $curso);
+        }
+        
+        $this->call(CategoriaSeeder::class);
     }
 }
