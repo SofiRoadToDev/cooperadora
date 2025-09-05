@@ -34,7 +34,12 @@ class EgresoController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $data = $request->all();
+        if (empty($data['tipo_comprobante'])) {
+            $data['tipo_comprobante'] = null;
+        }
+
+        $validator = Validator::make($data, [
             'fecha' => 'required',
             'hora' => 'required',
             'categoria_id' => 'required|exists:categorias,id',
@@ -42,7 +47,7 @@ class EgresoController extends Controller
             'importe' => 'required|numeric',
             'solicitante' => 'required',
             'empresa' => 'nullable',
-            'tipo_comprobante' => 'nullable',
+            'tipo_comprobante' => 'nullable|in:ticket,factura,presupuesto,nota,firma,papel,otro',
             'numero_comprobante' => 'nullable',
             'observaciones' => 'nullable'
         ]);
@@ -83,7 +88,12 @@ class EgresoController extends Controller
      */
     public function update(Request $request, Egreso $egreso)
     {
-        $validator = Validator::make($request->all(), [
+        $data = $request->all();
+        if (empty($data['tipo_comprobante'])) {
+            $data['tipo_comprobante'] = null;
+        }
+
+        $validator = Validator::make($data, [
             'fecha' => 'required',
             'hora' => 'required',
             'categoria_id' => 'required|exists:categorias,id',
@@ -91,7 +101,7 @@ class EgresoController extends Controller
             'importe' => 'required|numeric',
             'solicitante' => 'required',
             'empresa' => 'nullable',
-            'tipo_comprobante' => 'nullable',
+            'tipo_comprobante' => 'nullable|in:ticket,factura,presupuesto,nota,firma,papel,otro',
             'numero_comprobante' => 'nullable',
             'observaciones' => 'nullable'
         ]);
