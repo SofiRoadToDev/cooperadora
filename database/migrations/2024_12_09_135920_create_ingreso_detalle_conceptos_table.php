@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ingreso_detalle_conceptos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ingreso_id');
-            $table->unsignedBigInteger('conepto_id');
+            $table->unsignedBigInteger('concepto_id');
             $table->integer('cantidad');
             $table->decimal('total_concepto');
             $table->timestamps();

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('importe_total', 6,2);
             $table->boolean('emailSent')->default('false');
             $table->boolean('impreso')->default('false');
-            $table->string('');
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

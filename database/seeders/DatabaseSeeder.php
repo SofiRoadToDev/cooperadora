@@ -30,6 +30,9 @@ class DatabaseSeeder extends Seeder
             Curso::updateOrCreate(['codigo' => $curso['codigo']], $curso);
         }
         
-        $this->call(CategoriaSeeder::class);
+        $this->call([
+            CategoriaSeeder::class,
+            ConceptoSeeder::class
+        ]);
     }
 }

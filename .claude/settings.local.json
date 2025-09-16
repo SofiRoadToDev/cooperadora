@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan make:seeder:*)",
+      "Bash(docker exec:*)",
+      "Bash(lsb_release:*)",
+      "Bash(sudo add-apt-repository:*)",
+      "Bash(php artisan migrate:refresh:*)",
+      "Bash(php artisan:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Concepto;
 use App\Models\Ingreso;
 use App\Models\Alumno;
+use App\Http\Requests\StoreIngresoRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -28,35 +29,11 @@ class IngresoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreIngresoRequest $request)
     {
-        
-       
-        $validator = Validator::make($request->all(), [
-        'fecha' => 'required|date',
-        'hora' => 'required|date_format:H:i',
-        'alumno_id' => 'required|exists:alumnos,id',
-        'conceptos' => 'required|array|min:1',
-        'conceptos.*.id' => 'required|exists:conceptos,id',
-        'conceptos.*.cantidad' => 'required|numeric|min:0.01',
-        'conceptos.*.total_concepto' => 'required|numeric|min:0.01',
-        'importe_total' => 'required|numeric|min:0.01',
-        'email' => 'nullable|email'
-    ]);
-
-
-        if($validator->fails()){
-            
-            return redirect()
-                    ->route('ingresos.create')
-                    ->withErrors($validator->errors())
-                    ->withInput();
-        };
-
         $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email']);
               
-        $ingreso = Ingreso::create($ingresoData); // despues revisar las relaciones con concepto, que son many to many
-       
+        $ingreso = Ingreso::create($ingresoData); 
         $conceptos = [];
         foreach ($request->input('conceptos') as $concepto) {
             $conceptos[$concepto['id']] = [
@@ -101,15 +78,43 @@ class IngresoController extends Controller
      */
     public function edit(Ingreso $ingreso)
     {
-        return view('ingresos.create', compact($ingreso));
+        $conceptos = Concepto::all();
+        $ingreso->load('conceptos');
+        return Inertia('Ingreso/IngresoEdit', compact('ingreso', 'conceptos'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Ingreso $ingreso)
+    public function update(StoreIngresoRequest $request, Ingreso $ingreso)
     {
-        //
+        try {
+            $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email']);
+
+            $ingreso->update($ingresoData);
+
+            // Detach existing conceptos and attach new ones
+            $ingreso->conceptos()->detach();
+
+            $conceptos = [];
+            foreach ($request->input('conceptos') as $concepto) {
+                $conceptos[$concepto['id']] = [
+                    'cantidad' => $concepto['cantidad'],
+                    'total_concepto' => $concepto['total_concepto'],
+                ];
+            }
+
+            $ingreso->conceptos()->attach($conceptos);
+
+            return redirect()
+                ->route('ingresos.index')
+                ->with('success', 'Ingreso actualizado exitosamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Error al actualizar el ingreso: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
 
     /**
@@ -117,6 +122,19 @@ class IngresoController extends Controller
      */
     public function destroy(Ingreso $ingreso)
     {
-        //
+        try {
+            // Detach conceptos before deleting
+            $ingreso->conceptos()->detach();
+
+            $ingreso->delete();
+
+            return redirect()
+                ->route('ingresos.index')
+                ->with('success', 'Ingreso eliminado exitosamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Error al eliminar el ingreso: ' . $e->getMessage()]);
+        }
     }
 }

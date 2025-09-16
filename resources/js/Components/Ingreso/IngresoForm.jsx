@@ -1,5 +1,5 @@
 import  { useState, useEffect } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, router } from '@inertiajs/react';
 import Alert from '@/Components/Alert';
 import ConceptoBlock from './ConceptoBlock';
 
@@ -8,43 +8,59 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
         id: Date.now(),
         concepto_id: '',
         cantidad: '',
-        total_concepto: ''
+        total_concepto: '0.00'
     }]);
     
     const [alumnoEncontrado, setAlumnoEncontrado] = useState('');
     const [alert, setAlert] = useState({ show: false, type: '', message: '' });
     
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, put, processing, errors, reset } = useForm({
         fecha: new Date().toISOString().split('T')[0],
         hora: new Date().toTimeString().slice(0, 5),
         dni: '',
-        alumno_id: ingreso?.alumno_id || '',
+        alumno_id: '',
         alumno: '',
-        email: ingreso?.email || '',
-        conceptos: [],
-        importe_total: ingreso?.importe_total || ''
+        email: '',
+        conceptos: [], // Asegurarse de que conceptos esté inicializado como array vacío
+        importe_total: '0.00'
     });
 
     useEffect(() => {
         if (ingreso) {
-            setData({
-                ...data,
-                fecha: ingreso.fecha,
-                hora: ingreso.hora,
-                dni: ingreso.alumno?.dni || '',
-                alumno_id: ingreso.alumno_id,
-                alumno: ingreso.alumno?.nombre || '',
-                email: ingreso.email || '',
-                importe_total: ingreso.importe_total || 0
-            });
+            // Preparar los conceptos iniciales si existen
+            let initialConceptos = [];
             
             if (ingreso.conceptos && ingreso.conceptos.length > 0) {
+                // Mapear los conceptos existentes al formato esperado por el backend
+                initialConceptos = ingreso.conceptos.map(concepto => ({
+                    id: concepto.id,
+                    cantidad: concepto.pivot.cantidad,
+                    total_concepto: parseFloat(concepto.pivot.total_concepto)
+                }));
+                
+                // Configurar los bloques de conceptos para la UI
                 setConceptoBlocks(ingreso.conceptos.map((concepto, index) => ({
                     id: Date.now() + index,
                     concepto_id: concepto.id,
                     cantidad: concepto.pivot.cantidad,
                     total_concepto: concepto.pivot.total_concepto
                 })));
+            }
+            
+            // Actualizar el estado del formulario con los datos del ingreso
+            setData({
+                fecha: ingreso.fecha || new Date().toISOString().split('T')[0],
+                hora: ingreso.hora || new Date().toTimeString().slice(0, 5),
+                dni: ingreso.alumno?.dni || '',
+                alumno_id: ingreso.alumno_id || '',
+                alumno: ingreso.alumno?.nombre || '',
+                email: ingreso.email || '',
+                conceptos: initialConceptos, // Inicializar conceptos con los datos existentes
+                importe_total: ingreso.importe_total || '0.00'
+            });
+            
+            if (ingreso.alumno) {
+                setAlumnoEncontrado(`${ingreso.alumno.nombre} ${ingreso.alumno.apellido}`);
             }
         }
     }, [ingreso]);
@@ -53,7 +69,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
         if (!data.dni) return;
         
         try {
-            const response = await fetch(`/api/alumnos/buscar/${data.dni}`);
+            const response = await fetch(`/ingresos/buscar-alumno/${data.dni}`);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -110,7 +126,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
             id: Date.now(),
             concepto_id: '',
             cantidad: '',
-            total_concepto: ''
+            total_concepto: '0.00'
         }]);
     };
 
@@ -128,11 +144,14 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                 // Calcular total si cambia concepto_id o cantidad
                 if (field === 'concepto_id' || field === 'cantidad') {
                     const concepto = conceptos.find(c => c.id == updatedBlock.concepto_id);
-                    if (concepto && updatedBlock.cantidad) {
+                    if (concepto && updatedBlock.cantidad && updatedBlock.cantidad !== '') {
                         const importe = concepto.importe || 0;
-                        updatedBlock.total_concepto = (importe * parseFloat(updatedBlock.cantidad)).toFixed(2);
+                        const cantidad = parseInt(updatedBlock.cantidad) || 0;
+                        updatedBlock.total_concepto = (importe * cantidad).toFixed(2);
+                    } else if (concepto && (!updatedBlock.cantidad || updatedBlock.cantidad === '')) {
+                        updatedBlock.total_concepto = '0.00';
                     } else {
-                        updatedBlock.total_concepto = '';
+                        updatedBlock.total_concepto = '0.00';
                     }
                 }
                 
@@ -142,32 +161,90 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
         }));
     };
 
-    // Calcular total general
+    // Calcular total general y actualizar conceptos en el formulario
     useEffect(() => {
         const total = conceptoBlocks.reduce((sum, block) => {
             return sum + (parseFloat(block.total_concepto) || 0);
         }, 0);
-        setData(prev => ({ ...prev, importe_total: total.toFixed(2) }));
+        
+        // Filtrar conceptos válidos para mantener actualizado el campo conceptos
+        const validConceptos = conceptoBlocks
+            .filter(block => {
+                return block.concepto_id && 
+                       parseInt(block.cantidad) > 0 && 
+                       parseFloat(block.total_concepto) > 0;
+            })
+            .map(block => ({
+                id: parseInt(block.concepto_id),
+                cantidad: parseInt(block.cantidad),
+                total_concepto: parseFloat(block.total_concepto)
+            }));
+            
+        // Actualizar tanto el importe total como los conceptos
+        setData(prev => ({ 
+            ...prev, 
+            importe_total: total.toFixed(2),
+            conceptos: validConceptos.length > 0 ? validConceptos : []
+        }));
+        
+        // Depuración para verificar la actualización de conceptos
+        console.log('Conceptos actualizados:', validConceptos);
     }, [conceptoBlocks]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        const conceptosData = conceptoBlocks.map(block => ({
-            id: parseInt(block.concepto_id),
-            cantidad: parseFloat(block.cantidad),
-            total_concepto: parseFloat(block.total_concepto)
-        }));
+        // Filtrar conceptos válidos directamente antes de enviar
+        const validConceptos = conceptoBlocks
+            .filter(block => {
+                return block.concepto_id && 
+                       parseInt(block.cantidad) > 0 && 
+                       parseFloat(block.total_concepto) > 0;
+            })
+            .map(block => ({
+                id: parseInt(block.concepto_id),
+                cantidad: parseInt(block.cantidad),
+                total_concepto: parseFloat(block.total_concepto)
+            }));
+            
+        // Actualizar los conceptos justo antes de enviar
+        setData(prev => ({ ...prev, conceptos: validConceptos }));
+        
+        // Verificar que hay conceptos válidos
+        if (!validConceptos || validConceptos.length === 0) {
+            setAlert({
+                show: true,
+                type: 'error',
+                message: 'Debe agregar al menos un concepto válido (con cantidad y total mayor a cero).'
+            });
+            return;
+        }
 
+        // Verificar que hay un alumno seleccionado
+        if (!data.alumno_id) {
+            setAlert({
+                show: true,
+                type: 'error', 
+                message: 'Debe buscar y seleccionar un alumno'
+            });
+            return;
+        }
+        
+        // Crear un objeto con los datos actualizados para enviar
         const formData = {
             ...data,
-            conceptos: conceptosData
+            conceptos: validConceptos
         };
-
+        
+        // Depuración para verificar los datos antes de enviar
+        console.log('Datos a enviar:', formData);
+        console.log('Conceptos a enviar:', formData.conceptos);
+        
+        // Enviar el formulario
         if (ingreso?.id) {
-            put(route('ingresos.update', ingreso.id), formData);
+            put(`/ingresos/${ingreso.id}`, formData);
         } else {
-            post(route('ingresos.store'), formData);
+            post('/ingresos', formData);
         }
     };
 

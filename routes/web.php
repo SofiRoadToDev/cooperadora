@@ -22,7 +22,7 @@ Route::resource('/alumnos', AlumnoController::class);
 
 Route::resource('/ingresos', IngresoController::class);
 
-Route::get('/api/alumnos/buscar/{dni}', [IngresoController::class, 'buscarAlumno']);
+Route::get('/ingresos/buscar-alumno/{dni}', [IngresoController::class, 'buscarAlumno']);
 
 Route::resource('/egresos', EgresoController::class);
 

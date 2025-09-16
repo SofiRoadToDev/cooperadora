@@ -9,7 +9,7 @@ function ConceptoBlock({
         <div className="grid grid-cols-4 gap-x-1 mt-2">
             <select 
                 className="border border-slate-600 bg-white px-2"
-                value={block.concepto_id}
+                value={block.concepto_id || ''}
                 onChange={(e) => onConceptoChange(block.id, 'concepto_id', e.target.value)}
             >
                 <option value="">Seleccionar concepto</option>
@@ -23,15 +23,18 @@ function ConceptoBlock({
             <input 
                 type="number" 
                 step="1"
+                min="1"
+                max="20"
                 className="border border-slate-600 p-1"
-                value={block.cantidad}
+                value={block.cantidad || ''}
                 onChange={(e) => onConceptoChange(block.id, 'cantidad', e.target.value)}
+                placeholder="Cantidad"
             />
             
             <input 
                 type="text" 
                 className="border border-slate-600 p-1"
-                value={block.total_concepto}
+                value={block.total_concepto || '0.00'}
                 readOnly
             />
             

@@ -2,7 +2,7 @@ import Layout from "@/Layouts/Layout";
 import IngresoForm from "@/Components/Ingreso/IngresoForm";
 
 
-function IngresoCreate({conceptos, ingreso}) {
+function IngresoEdit({conceptos, ingreso}) {
   return (
     <Layout>
         <IngresoForm conceptos={conceptos} ingreso={ingreso}/>
@@ -10,4 +10,4 @@ function IngresoCreate({conceptos, ingreso}) {
   )
 }
 
-export default IngresoCreate
+export default IngresoEdit
