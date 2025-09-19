@@ -364,15 +364,15 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
             {errors.importe_total && <span className="text-red-500 text-sm">{errors.importe_total}</span>}
 
             <div className="grid grid-cols-3 gap-4 mt-3">
-                {/* Email Button - disabled if no email or ingreso not created */}
-                {ingreso?.id && data.email ? (
+                {/* Email Button - enabled if ingreso is created */}
+                {ingreso?.id ? (
                     <a href='/mail' className="mx-auto mt-2 flex flex-col items-center hover:opacity-80">
-                        <i className="fas fa-paper-plane text-leafdarkest text-4xl"></i>
+                        <i className="fas fa-envelope text-leafdarkest text-4xl"></i>
                         <span className="text-sm text-leafdarkest mt-1">Enviar Email</span>
                     </a>
                 ) : (
                     <div className="mx-auto mt-2 flex flex-col items-center opacity-50 cursor-not-allowed">
-                        <i className="fas fa-paper-plane text-gray-400 text-4xl"></i>
+                        <i className="fas fa-envelope text-gray-400 text-4xl"></i>
                         <span className="text-sm text-gray-400 mt-1">Enviar Email</span>
                     </div>
                 )}

@@ -6,7 +6,8 @@
       "Bash(lsb_release:*)",
       "Bash(sudo add-apt-repository:*)",
       "Bash(php artisan migrate:refresh:*)",
-      "Bash(php artisan:*)"
+      "Bash(php artisan:*)",
+      "Bash(mysql:*)"
     ],
     "deny": [],
     "ask": []

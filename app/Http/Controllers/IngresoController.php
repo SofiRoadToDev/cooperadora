@@ -15,24 +15,12 @@ class IngresoController extends Controller
 
     public function index()
     {
-        $ingresos = Ingreso::orderBy('fecha', 'desc')->get();
+        // Usar with() para cargar relaciones como en edit()
+        $ingresos = Ingreso::with(['alumno', 'conceptos'])
+                          ->orderBy('fecha', 'desc')
+                          ->get();
 
-        // Obtener todos los IDs de alumnos únicos
-        $alumnoIds = $ingresos->pluck('alumno_id')->unique();
-
-        // Consulta extra para traer apellidos y nombres de alumnos
-        $alumnos = Alumno::whereIn('id', $alumnoIds)
-                         ->select('id', 'apellido', 'nombre')
-                         ->get()
-                         ->keyBy('id');
-
-        // Crear nuevo objeto con datos completos de alumnos
-        $ingresosConAlumnos = $ingresos->map(function ($ingreso) use ($alumnos) {
-            $ingreso->alumno = $alumnos->get($ingreso->alumno_id);
-            return $ingreso;
-        });
-
-        return Inertia('Ingreso/Ingreso', ['ingresos' => $ingresosConAlumnos]);
+        return Inertia('Ingreso/Ingreso', ['ingresos' => $ingresos]);
     }
 
 
