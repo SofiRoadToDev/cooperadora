@@ -112,37 +112,32 @@ class InformesTestSeeder extends Seeder
             // Seleccionar 1-3 conceptos aleatorios
             $conceptosParaIngreso = $conceptosCreados->random(rand(1, 3));
             $importeTotal = 0;
+            $conceptos_a_asociar = [];
 
-            $ingreso = Ingreso::create([
-                'fecha' => $fecha->format('Y-m-d'),
-                'hora' => $fecha->format('H:i:s'),
-                'alumno_id' => $alumno->id,
-                'user_id' => $usuario->id,
-                'observaciones' => $i % 4 == 0 ? 'Pago en efectivo' : null,
-                'importe_total' => 0, // Se calculará después
-                'emailSent' => false,
-                'impreso' => false,
-                'email' => $i % 3 == 0 ? 'test@email.com' : null,
-            ]);
-
-            // Crear las relaciones con conceptos
             foreach ($conceptosParaIngreso as $concepto) {
                 $cantidad = rand(1, 2);
                 $totalConcepto = $concepto->importe * $cantidad;
                 $importeTotal += $totalConcepto;
 
-                DB::table('ingreso_detalle_conceptos')->insert([
-                    'ingreso_id' => $ingreso->id,
-                    'concepto_id' => $concepto->id,
+                $conceptos_a_asociar[$concepto->id] = [
                     'cantidad' => $cantidad,
                     'total_concepto' => $totalConcepto,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                ];
             }
 
-            // Actualizar el importe total del ingreso
-            $ingreso->update(['importe_total' => $importeTotal]);
+            $ingreso = Ingreso::create([
+                'fecha' => $fecha->format('Y-m-d'),
+                'hora' => $fecha->toDateTimeString(),
+                'alumno_id' => $alumno->id,
+                'user_id' => $usuario->id,
+                'observaciones' => $i % 4 == 0 ? 'Pago en efectivo' : null,
+                'importe_total' => $importeTotal,
+                'emailSent' => false,
+                'impreso' => false,
+                'email' => $i % 3 == 0 ? 'test@email.com' : null,
+            ]);
+
+            $ingreso->conceptos()->attach($conceptos_a_asociar);
         }
 
         // Crear egresos de prueba

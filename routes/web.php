@@ -12,7 +12,7 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('dashboard');
+        return redirect()->route('ingresos.index');
     }
     return redirect()->route('login');
 });

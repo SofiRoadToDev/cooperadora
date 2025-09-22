@@ -10,15 +10,6 @@ class Ingreso extends Model
 {
     protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso', 'email', 'user_id'];
 
-    protected static function booted()
-    {
-        static::creating(function ($ingreso) {
-            if (Auth::check() && Auth::id()) {
-                $ingreso->user_id = Auth::id();
-            }
-        });
-    }
-
 
     public function conceptos(){
         return $this->belongsToMany(Concepto::class,

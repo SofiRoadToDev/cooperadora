@@ -35,7 +35,7 @@ class IngresoController extends Controller
      */
     public function store(StoreIngresoRequest $request)
     {
-        $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email']);
+        $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email', 'observaciones']);
               
         $ingreso = Ingreso::create($ingresoData); 
         $conceptos = [];
@@ -93,7 +93,7 @@ class IngresoController extends Controller
     public function update(StoreIngresoRequest $request, Ingreso $ingreso)
     {
         try {
-            $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email']);
+            $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email', 'observaciones']);
 
             $ingreso->update($ingresoData);
 

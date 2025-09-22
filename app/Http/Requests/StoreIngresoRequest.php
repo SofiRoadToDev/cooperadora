@@ -24,7 +24,8 @@ class StoreIngresoRequest extends FormRequest
             'conceptos.*.cantidad' => 'required|integer|min:1|max:20',
             'conceptos.*.total_concepto' => 'required|numeric|min:0.01',
             'importe_total' => 'required|numeric|min:0.01',
-            'email' => 'nullable|email'
+            'email' => 'nullable|email',
+            'observaciones' => 'nullable|string'
         ];
     }
 }

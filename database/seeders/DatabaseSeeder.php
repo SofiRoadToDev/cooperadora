@@ -31,8 +31,10 @@ class DatabaseSeeder extends Seeder
         }
         
         $this->call([
+             UserSeeder::class,
             CategoriaSeeder::class,
-            ConceptoSeeder::class
+            ConceptoSeeder::class,
+            InformesTestSeeder::class
         ]);
     }
 }
