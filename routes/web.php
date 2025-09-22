@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IngresoController;
 use App\Http\Controllers\EgresoController;
 use App\Http\Controllers\ConceptoController;
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\AlumnoController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('ingresos', IngresoController::class);
     Route::resource('egresos', EgresoController::class);
     Route::resource('conceptos', ConceptoController::class);
+    Route::resource('categorias', CategoriaController::class);
     Route::resource('alumnos', AlumnoController::class);
 
     // Rutas de informes
