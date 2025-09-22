@@ -32,13 +32,15 @@ Route::resource('/conceptos', ConceptoController::class);
 // Rutas para informes
 Route::get('/informes', [ReportController::class, 'index'])->name('informes.index');
 
-// API endpoints para gráficos y datos
-Route::get('/api/informes/ingresos-por-concepto', [ReportController::class, 'getIngresosPorConcepto'])->name('api.informes.ingresos-concepto');
-Route::get('/api/informes/egresos-por-categoria', [ReportController::class, 'getEgresosPorCategoria'])->name('api.informes.egresos-categoria');
-Route::get('/api/informes/saldo-general', [ReportController::class, 'getSaldoGeneral'])->name('api.informes.saldo-general');
-Route::get('/api/informes/resumen-mensual', [ReportController::class, 'getResumenMensual'])->name('api.informes.resumen-mensual');
-Route::get('/api/informes/ingresos-detallados', [ReportController::class, 'getIngresosDetallados'])->name('api.informes.ingresos-detallados');
-Route::get('/api/informes/egresos-detallados', [ReportController::class, 'getEgresosDetallados'])->name('api.informes.egresos-detallados');
+// API endpoints para gráficos y datos (sin CSRF para peticiones GET)
+Route::withoutMiddleware(['csrf'])->group(function () {
+    Route::get('/api/informes/ingresos-por-concepto', [ReportController::class, 'getIngresosPorConcepto'])->name('api.informes.ingresos-concepto');
+    Route::get('/api/informes/egresos-por-categoria', [ReportController::class, 'getEgresosPorCategoria'])->name('api.informes.egresos-categoria');
+    Route::get('/api/informes/saldo-general', [ReportController::class, 'getSaldoGeneral'])->name('api.informes.saldo-general');
+    Route::get('/api/informes/resumen-mensual', [ReportController::class, 'getResumenMensual'])->name('api.informes.resumen-mensual');
+    Route::get('/api/informes/ingresos-detallados', [ReportController::class, 'getIngresosDetallados'])->name('api.informes.ingresos-detallados');
+    Route::get('/api/informes/egresos-detallados', [ReportController::class, 'getEgresosDetallados'])->name('api.informes.egresos-detallados');
+});
 
 // Rutas de exportación
 Route::get('/informes/exportar-ingresos', [ReportController::class, 'exportarIngresos'])->name('informes.exportar-ingresos');

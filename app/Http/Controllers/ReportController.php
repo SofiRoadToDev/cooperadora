@@ -35,12 +35,11 @@ class ReportController extends Controller
             ->join('conceptos as c', 'idc.concepto_id', '=', 'c.id')
             ->select(
                 'c.nombre as concepto_nombre',
-                'c.tipo as concepto_tipo',
                 DB::raw('SUM(idc.total_concepto) as total_importe'),
                 DB::raw('SUM(idc.cantidad) as total_cantidad')
             )
             ->whereBetween('i.fecha', [$fechaInicio, $fechaFin])
-            ->groupBy('c.id', 'c.nombre', 'c.tipo')
+            ->groupBy('c.id', 'c.nombre')
             ->orderBy('total_importe', 'desc')
             ->get();
 
@@ -136,7 +135,7 @@ class ReportController extends Controller
                 'i.hora',
                 'i.importe_total',
                 'i.observaciones',
-                DB::raw('CONCAT(a.apellido, ", ", a.nombre) as alumno_nombre')
+                DB::raw('(a.apellido || ", " || a.nombre) as alumno_nombre')
             )
             ->whereBetween('i.fecha', [$fechaInicio, $fechaFin])
             ->orderBy('i.fecha', 'desc')
@@ -187,10 +186,9 @@ class ReportController extends Controller
                 'i.hora',
                 'i.importe_total',
                 'i.observaciones',
-                DB::raw('CONCAT(a.apellido, ", ", a.nombre) as alumno_nombre'),
+                DB::raw('(a.apellido || ", " || a.nombre) as alumno_nombre'),
                 'a.dni',
                 'c.nombre as concepto_nombre',
-                'c.tipo as concepto_tipo',
                 'idc.cantidad',
                 'idc.total_concepto'
             )
@@ -219,7 +217,6 @@ class ReportController extends Controller
                 'Alumno',
                 'DNI',
                 'Concepto',
-                'Tipo Concepto',
                 'Cantidad',
                 'Total Concepto',
                 'Importe Total',
@@ -235,7 +232,6 @@ class ReportController extends Controller
                     $ingreso->alumno_nombre,
                     $ingreso->dni,
                     $ingreso->concepto_nombre ?? '-',
-                    $ingreso->concepto_tipo ?? '-',
                     $ingreso->cantidad ?? '-',
                     $ingreso->total_concepto ? number_format($ingreso->total_concepto, 2, ',', '.') : '-',
                     number_format($ingreso->importe_total, 2, ',', '.'),
@@ -357,11 +353,10 @@ class ReportController extends Controller
 
             // Ingresos por concepto
             fputcsv($file, ['INGRESOS POR CONCEPTO'], ';');
-            fputcsv($file, ['Concepto', 'Tipo', 'Cantidad', 'Total'], ';');
+            fputcsv($file, ['Concepto', 'Cantidad', 'Total'], ';');
             foreach ($ingresosPorConcepto as $ingreso) {
                 fputcsv($file, [
                     $ingreso->concepto_nombre,
-                    $ingreso->concepto_tipo,
                     $ingreso->total_cantidad,
                     number_format($ingreso->total_importe, 2, ',', '.')
                 ], ';');
