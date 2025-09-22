@@ -6,6 +6,8 @@ function IngresoList({ ingresos = [] }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedIngreso, setSelectedIngreso] = useState(null);
     const [searchNumber, setSearchNumber] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(15);
     const { delete: destroy } = useForm();
 
     const handleDeleteClick = (ingreso) => {
@@ -36,6 +38,21 @@ function IngresoList({ ingresos = [] }) {
         return ingreso.id.toString().includes(searchNumber);
     });
 
+    // Paginación
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentIngresos = filteredIngresos.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredIngresos.length / itemsPerPage);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const handleSearchChange = (value) => {
+        setSearchNumber(value);
+        setCurrentPage(1); // Reset to first page when searching
+    };
+
     return (
         <>
         {/* Filtro de búsqueda */}
@@ -48,7 +65,7 @@ function IngresoList({ ingresos = [] }) {
                 type="text"
                 placeholder="Ingrese número"
                 value={searchNumber}
-                onChange={(e) => setSearchNumber(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="border border-slate-600 px-3 py-1 rounded focus:outline-none focus:border-leafdarkest"
             />
             {searchNumber && (
@@ -74,8 +91,8 @@ function IngresoList({ ingresos = [] }) {
                 </tr>
             </thead>
             <tbody>
-                {filteredIngresos &&
-                    filteredIngresos.map((ingreso) => (
+                {currentIngresos &&
+                    currentIngresos.map((ingreso) => (
                         <tr className="border border-slate-600 bg-leaflighest" key={ingreso.id}>
                             <td className="px-4 py-2 border border-slate-600">
                                 {ingreso.id}
@@ -112,6 +129,56 @@ function IngresoList({ ingresos = [] }) {
                     ))}
             </tbody>
         </table>
+
+        {/* Información de paginación */}
+        <div className="flex justify-between items-center mt-4">
+            <div className="text-sm text-leafdarkest">
+                Mostrando {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredIngresos.length)} de {filteredIngresos.length} registros
+            </div>
+
+            {/* Controles de paginación */}
+            {totalPages > 1 && (
+                <div className="flex space-x-2">
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className={`px-3 py-1 rounded ${
+                            currentPage === 1
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-leafmedium text-white hover:bg-leafdarkest'
+                        }`}
+                    >
+                        Anterior
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`px-3 py-1 rounded ${
+                                currentPage === page
+                                    ? 'bg-leafdarkest text-white'
+                                    : 'bg-leaflight text-leafdarkest hover:bg-leafmedium hover:text-white'
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className={`px-3 py-1 rounded ${
+                            currentPage === totalPages
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-leafmedium text-white hover:bg-leafdarkest'
+                        }`}
+                    >
+                        Siguiente
+                    </button>
+                </div>
+            )}
+        </div>
 
         <Dialog
             isOpen={dialogOpen}
