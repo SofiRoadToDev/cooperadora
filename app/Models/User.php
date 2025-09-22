@@ -66,4 +66,14 @@ class User extends Authenticatable
     {
         return 'password';
     }
+
+    public function ingresos()
+    {
+        return $this->hasMany(Ingreso::class);
+    }
+
+    public function egresos()
+    {
+        return $this->hasMany(Egreso::class);
+    }
 }

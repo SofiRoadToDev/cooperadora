@@ -6,6 +6,7 @@ use App\Models\Egreso;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class EgresoController extends Controller
@@ -16,7 +17,9 @@ class EgresoController extends Controller
      */
     public function index()
     {
-        $egresos = Egreso::with('categoria')->get();
+        $egresos = Egreso::with('categoria')
+                            ->where('user_id', Auth::user()->id)
+                            ->get();
         return Inertia('Egreso/Egreso', compact('egresos'));
 
     }

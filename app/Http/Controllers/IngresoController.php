@@ -9,6 +9,7 @@ use App\Http\Requests\StoreIngresoRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class IngresoController extends Controller
 {
@@ -16,7 +17,9 @@ class IngresoController extends Controller
     public function index()
     {
         // Usar with() para cargar relaciones como en edit()
+       
         $ingresos = Ingreso::with(['alumno', 'conceptos'])
+                            ->where('user_id', Auth::user()->id)
                           ->orderBy('fecha', 'desc')
                           ->get();
 

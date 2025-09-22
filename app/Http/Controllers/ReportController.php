@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class ReportController extends Controller
@@ -30,12 +32,16 @@ class ReportController extends Controller
     }
 
     public function getIngresosPorConcepto(Request $request)
-    {   Log::info($request->input('fecha_inicio') );
-        Log::info($request->input('fecha_fin') );
+    {   Log::info('getIngresosPorConcepto - fecha_inicio: ' . $request->input('fecha_inicio') );
+        Log::info('getIngresosPorConcepto - fecha_fin: ' . $request->input('fecha_fin') );
+        Log::info('getIngresosPorConcepto - Auth::user()->id: ' . Auth::user()->id);
+        Log::info('getIngresosPorConcepto - Auth::check(): ' . (Auth::check() ? 'true' : 'false'));
         try{
         $fechaInicio = $request->input('fecha_inicio', Carbon::now()->startOfMonth());
         $fechaFin = $request->input('fecha_fin', Carbon::now()->endOfMonth());
-      
+
+        $userId = Auth::user()->id; // Usar el ID numérico real
+        Log::info('getIngresosPorConcepto - userId antes de consulta: ' . $userId . ' (Auth::user()->id: ' . Auth::user()->id . ')');
 
         $ingresosPorConcepto = DB::table('ingreso_detalle_conceptos as idc')
             ->join('ingresos as i', 'idc.ingreso_id', '=', 'i.id')
@@ -46,6 +52,7 @@ class ReportController extends Controller
                 DB::raw('SUM(idc.cantidad) as total_cantidad')
             )
             ->whereBetween('i.fecha', [$fechaInicio, $fechaFin])
+            ->where('i.user_id', Auth::user()->id)
             ->groupBy('c.id', 'c.nombre')
             ->orderBy('total_importe', 'desc')
             ->get();
@@ -64,6 +71,17 @@ class ReportController extends Controller
         $fechaInicio = $request->input('fecha_inicio', Carbon::now()->startOfMonth());
         $fechaFin = $request->input('fecha_fin', Carbon::now()->endOfMonth());
 
+        Log::info('getEgresosPorCategoria - User ID: ' . Auth::user()->id . ' (Auth::id(): ' . Auth::id() . ')');
+        Log::info('getEgresosPorCategoria - Fecha inicio: ' . $fechaInicio . ', Fecha fin: ' . $fechaFin);
+
+        // Debug: contar egresos sin filtros
+        $totalEgresosSinFiltros = DB::table('egresos')->where('user_id', Auth::user()->id)->count();
+        Log::info('getEgresosPorCategoria - Total egresos sin filtro fecha: ' . $totalEgresosSinFiltros);
+
+        // Debug: contar egresos solo con filtro de fecha
+        $totalEgresosSoloFecha = DB::table('egresos')->whereBetween('fecha', [$fechaInicio, $fechaFin])->count();
+        Log::info('getEgresosPorCategoria - Total egresos solo filtro fecha: ' . $totalEgresosSoloFecha);
+
         $egresosPorCategoria = DB::table('egresos as e')
             ->leftJoin('categorias as cat', 'e.categoria_id', '=', 'cat.id')
             ->select(
@@ -74,9 +92,12 @@ class ReportController extends Controller
                 DB::raw('COUNT(e.id) as cantidad_egresos')
             )
             ->whereBetween('e.fecha', [$fechaInicio, $fechaFin])
+            ->where('e.user_id', Auth::user()->id)
             ->groupBy('cat.id', 'cat.nombre', 'cat.descripcion')
             ->orderBy('total_importe', 'desc')
             ->get();
+
+        Log::info('getEgresosPorCategoria - Resultados encontrados: ' . $egresosPorCategoria->count());
 
         return response()->json($egresosPorCategoria);
     }
@@ -88,10 +109,12 @@ class ReportController extends Controller
 
         $totalIngresos = DB::table('ingresos')
             ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->where('user_id', Auth::user()->id)
             ->sum('importe_total');
 
         $totalEgresos = DB::table('egresos')
             ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->where('user_id', Auth::user()->id)
             ->sum('importe');
 
         $saldo = $totalIngresos - $totalEgresos;
@@ -117,10 +140,12 @@ class ReportController extends Controller
 
             $totalIngresos = DB::table('ingresos')
                 ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+                ->where('user_id', Auth::user()->id)
                 ->sum('importe_total');
 
             $totalEgresos = DB::table('egresos')
                 ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+                ->where('user_id', Auth::user()->id)
                 ->sum('importe');
 
             $resumenMensual[] = [
@@ -151,6 +176,7 @@ class ReportController extends Controller
                 DB::raw('(a.apellido || ", " || a.nombre) as alumno_nombre')
             )
             ->whereBetween('i.fecha', [$fechaInicio, $fechaFin])
+            ->where('i.user_id', Auth::user()->id)
             ->orderBy('i.fecha', 'desc')
             ->get();
 
@@ -178,6 +204,7 @@ class ReportController extends Controller
                 DB::raw('COALESCE(cat.nombre, "Sin Categoría") as categoria_nombre')
             )
             ->whereBetween('e.fecha', [$fechaInicio, $fechaFin])
+            ->where('e.user_id', Auth::user()->id)
             ->orderBy('e.fecha', 'desc')
             ->get();
 
@@ -206,6 +233,7 @@ class ReportController extends Controller
                 'idc.total_concepto'
             )
             ->whereBetween('i.fecha', [$fechaInicio, $fechaFin])
+            ->where('i.user_id', Auth::user()->id)
             ->orderBy('i.fecha', 'desc')
             ->get();
 
@@ -279,6 +307,7 @@ class ReportController extends Controller
                 DB::raw('COALESCE(cat.nombre, "Sin Categoría") as categoria_nombre')
             )
             ->whereBetween('e.fecha', [$fechaInicio, $fechaFin])
+            ->where('e.user_id', Auth::user()->id)
             ->orderBy('e.fecha', 'desc')
             ->get();
 
