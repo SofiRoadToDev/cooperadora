@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Rutas de la aplicación principal
+    Route::get('/ingresos/{ingreso}/pdf', [IngresoController::class, 'generarPDF'])->name('pdfs.factura');
+    Route::get('/ingresos/{ingreso}/email', [IngresoController::class, 'enviarEmail'])->name('mails.factura');
     Route::resource('ingresos', IngresoController::class);
     Route::resource('egresos', EgresoController::class);
     Route::resource('conceptos', ConceptoController::class);
@@ -39,10 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/egresos-detallados', [ReportController::class, 'getEgresosDetallados'])->withoutMiddleware(['csrf']);
     Route::get('/api/saldo-general', [ReportController::class, 'getSaldoGeneral'])->withoutMiddleware(['csrf']);
     Route::get('/api/resumen', [ReportController::class, 'getResumen'])->withoutMiddleware(['csrf']);
-    Route::get('/export/ingresos-concepto', [ReportController::class, 'exportIngresosPorConcepto'])->name('export.ingresos.concepto');
-    Route::get('/export/egresos-categoria', [ReportController::class, 'exportEgresosPorCategoria'])->name('export.egresos.categoria');
-    Route::get('/export/ingresos-detallados', [ReportController::class, 'exportIngresosDetallados'])->name('export.ingresos.detallados');
-    Route::get('/export/egresos-detallados', [ReportController::class, 'exportEgresosDetallados'])->name('export.egresos.detallados');
+    Route::get('/informes/exportar-ingresos', [ReportController::class, 'exportarIngresos'])->name('informes.exportar.ingresos');
+    Route::get('/informes/exportar-egresos', [ReportController::class, 'exportarEgresos'])->name('informes.exportar.egresos');
+    Route::get('/informes/exportar-resumen', [ReportController::class, 'exportarResumen'])->name('informes.exportar.resumen');
 });
 
 require __DIR__.'/auth.php';

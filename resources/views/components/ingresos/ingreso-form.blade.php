@@ -49,17 +49,32 @@
     </div>
     <label for="total" class="mx-auto mt-3">Total</label>
     <input type="text"  name="importe_total" class="w-1/2 mx-auto border border-slate-600 p-1">
-    <div class="grid grid-cols-3 gap-4 mt-3">               
-            <a href="{{route('mails.factura')}} " class="mx-auto mt-2" >
-                <i class="fas fa-envelope  text-leafdarkest text-5xl"></i>
+    @if(isset($ingreso->id))
+        {{-- Botones para ingreso existente (edición) --}}
+        <div class="grid grid-cols-3 gap-4 mt-3">
+            <a href="{{route('mails.factura', $ingreso->id)}}" class="mx-auto mt-2" title="Enviar por email">
+                <i class="fas fa-envelope text-leafdarkest text-5xl hover:text-leafsecond"></i>
             </a>
-        
-        <button class="bg-leafsecond text-white py-2 my-4" type="submit">Enviar</button>
-       
-            <a href="{{route('pdfs.factura')}}" class="mx-auto mt-2">
-                 <i class="fas fa-print text-leafdarkest text-6xl"></i> 
-            </a>        
-    </div>
+
+            <button class="bg-leafsecond text-white py-2 my-4 hover:bg-leafdarkest" type="submit">
+                Actualizar
+            </button>
+
+            <a href="{{route('pdfs.factura', $ingreso->id)}}" class="mx-auto mt-2" title="Descargar PDF">
+                <i class="fas fa-print text-leafdarkest text-6xl hover:text-leafsecond"></i>
+            </a>
+        </div>
+    @else
+        {{-- Botón para nuevo ingreso --}}
+        <div class="text-center mt-3">
+            <button class="bg-leafsecond text-white py-2 px-6 my-4 hover:bg-leafdarkest" type="submit">
+                Crear Ingreso
+            </button>
+            <p class="text-sm text-gray-600 mt-2">
+                Los botones de PDF y email estarán disponibles después de crear el ingreso
+            </p>
+        </div>
+    @endif
     
 </form>
 @vite('resources/js/main.js')

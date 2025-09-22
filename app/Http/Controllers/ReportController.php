@@ -167,16 +167,18 @@ class ReportController extends Controller
 
         $ingresos = DB::table('ingresos as i')
             ->join('alumnos as a', 'i.alumno_id', '=', 'a.id')
+            ->leftJoin('ingreso_detalle_conceptos as idc', 'i.id', '=', 'idc.ingreso_id')
             ->select(
                 'i.id',
                 'i.fecha',
                 'i.hora',
-                'i.importe_total',
                 'i.observaciones',
-                DB::raw('(a.apellido || ", " || a.nombre) as alumno_nombre')
+                DB::raw('(a.apellido || ", " || a.nombre) as alumno_nombre'),
+                DB::raw('COALESCE(SUM(idc.total_concepto), i.importe_total) as importe_total_calculado')
             )
             ->whereBetween('i.fecha', [$fechaInicio, $fechaFin])
             ->where('i.user_id', Auth::user()->id)
+            ->groupBy('i.id', 'i.fecha', 'i.hora', 'i.observaciones', 'i.importe_total', 'a.apellido', 'a.nombre')
             ->orderBy('i.fecha', 'desc')
             ->get();
 

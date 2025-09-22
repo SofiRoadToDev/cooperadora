@@ -79,24 +79,29 @@ export default function Informes({ fecha_inicio_default, fecha_fin_default }) {
         return (
             <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-leafdarkest mb-4">{label}</h3>
-                {data.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                        <div className="w-32 text-sm text-leafdarkest font-medium truncate">
-                            {item.concepto_nombre || item.categoria_display}
+                {data.map((item, index) => {
+                    const percentage = (parseFloat(item[dataKey]) / maxValue) * 100;
+                    const textColor = percentage > 50 ? 'text-white' : 'text-leafdarkest';
+
+                    return (
+                        <div key={index} className="flex items-center space-x-3">
+                            <div className="w-32 text-sm text-leafdarkest font-medium truncate">
+                                {item.concepto_nombre || item.categoria_display}
+                            </div>
+                            <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
+                                <div
+                                    className={`${color} h-6 rounded-full transition-all duration-500`}
+                                    style={{
+                                        width: `${percentage}%`
+                                    }}
+                                ></div>
+                                <span className={`absolute inset-0 flex items-center justify-center text-xs font-medium ${textColor} transition-colors duration-500`}>
+                                    {formatCurrency(item[dataKey])}
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
-                            <div
-                                className={`${color} h-6 rounded-full transition-all duration-500`}
-                                style={{
-                                    width: `${(parseFloat(item[dataKey]) / maxValue) * 100}%`
-                                }}
-                            ></div>
-                            <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-leafdarkest">
-                                {formatCurrency(item[dataKey])}
-                            </span>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         );
     };
@@ -264,7 +269,7 @@ export default function Informes({ fecha_inicio_default, fecha_fin_default }) {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{ingreso.id}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatDate(ingreso.fecha)}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ingreso.alumno_nombre}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{formatCurrency(ingreso.importe_total)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">{formatCurrency(ingreso.importe_total_calculado)}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-500">{ingreso.observaciones || '-'}</td>
                                             </tr>
                                         ))}

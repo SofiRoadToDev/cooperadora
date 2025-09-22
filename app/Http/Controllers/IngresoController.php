@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FacturaMail;
 
 class IngresoController extends Controller
 {
@@ -17,7 +19,7 @@ class IngresoController extends Controller
     public function index()
     {
         // Usar with() para cargar relaciones como en edit()
-       
+
         $ingresos = Ingreso::with(['alumno', 'conceptos'])
                             ->where('user_id', Auth::user()->id)
                           ->orderBy('fecha', 'desc')
@@ -39,7 +41,8 @@ class IngresoController extends Controller
     public function store(StoreIngresoRequest $request)
     {
         $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email', 'observaciones']);
-              
+        $ingresoData['user_id'] = Auth::user()->id;
+
         $ingreso = Ingreso::create($ingresoData); 
         $conceptos = [];
         foreach ($request->input('conceptos') as $concepto) {
@@ -85,6 +88,11 @@ class IngresoController extends Controller
      */
     public function edit(Ingreso $ingreso)
     {
+        // Verificar que el ingreso pertenece al usuario autenticado
+        if ($ingreso->user_id !== Auth::user()->id) {
+            abort(403, 'No tienes permisos para editar este ingreso.');
+        }
+
         $conceptos = Concepto::all();
         $ingreso->load('conceptos');
         return Inertia('Ingreso/IngresoEdit', compact('ingreso', 'conceptos'));
@@ -142,6 +150,70 @@ class IngresoController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withErrors(['error' => 'Error al eliminar el ingreso: ' . $e->getMessage()]);
+        }
+    }
+
+    public function generarPDF(Ingreso $ingreso)
+    {
+        try {
+            // Verificar que el ingreso pertenece al usuario autenticado
+            if ($ingreso->user_id !== Auth::user()->id) {
+                abort(403, 'No tienes permisos para acceder a este ingreso.');
+            }
+
+            // Cargar relaciones necesarias
+            $ingreso->load(['alumno', 'conceptos']);
+
+            // Log para debugging
+            \Log::info('Generando PDF para ingreso: ' . $ingreso->id);
+            \Log::info('Alumno: ' . ($ingreso->alumno ? $ingreso->alumno->nombre : 'Sin alumno'));
+            \Log::info('Conceptos: ' . $ingreso->conceptos->count());
+
+            // Generar PDF usando la vista de email
+            $pdf = \PDF::loadView('mails.factura', ['ingreso' => $ingreso]);
+
+            $filename = 'recibo_' . str_pad($ingreso->id, 6, '0', STR_PAD_LEFT) . '.pdf';
+
+            return $pdf->download($filename);
+
+        } catch (\Exception $e) {
+            \Log::error('Error generando PDF: ' . $e->getMessage());
+            return redirect()->back()
+                ->withErrors(['error' => 'Error al generar PDF: ' . $e->getMessage()]);
+        }
+    }
+
+    public function enviarEmail(Ingreso $ingreso)
+    {
+        // Verificar que el ingreso pertenece al usuario autenticado
+        if ($ingreso->user_id !== Auth::user()->id) {
+            abort(403, 'No tienes permisos para acceder a este ingreso.');
+        }
+
+        // Cargar relaciones necesarias
+        $ingreso->load(['alumno', 'conceptos']);
+
+        // Verificar que hay un email para enviar
+        $email = $ingreso->email ?? $ingreso->alumno->email ?? null;
+
+        if (!$email) {
+            return redirect()->back()
+                ->withErrors(['error' => 'No se encontró una dirección de email para enviar el recibo.']);
+        }
+
+        try {
+            // Enviar email
+            Mail::to($email)->send(new FacturaMail($ingreso));
+
+            // Marcar como enviado
+            $ingreso->update(['emailSent' => true]);
+
+            return redirect()->back()
+                ->with('success', 'Recibo enviado exitosamente a ' . $email);
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Error al enviar el email: ' . $e->getMessage()]);
         }
     }
 }
