@@ -249,7 +249,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col p-5 bg-leaflighest shadow-md w-1/2 mb-5">
+        <form onSubmit={handleSubmit} className="flex flex-col p-5 bg-leaflighest shadow-md md:w-1/2 mb-5">
             <h3 className="form-header">Agregar Ingreso</h3>
             
             <Alert

@@ -69,7 +69,7 @@ function EgresoForm({categorias = [], egreso}) {
     return (
         <form
             onSubmit={submit}
-            className="flex flex-col bg-leaflighest p-5 shadow-md w-1/2 mb-5"
+            className="flex flex-col bg-leaflighest p-5 shadow-md md:w-1/2 mb-5"
             method="POST"
         >
             <h3 className="form-header">{egreso ? "Actualizar Egreso" : "Nuevo Egreso"}</h3>

@@ -72,7 +72,7 @@ function AlumnoForm({ cursos, alumno }) {
         <form
         
             onSubmit={submit}
-            className="flex flex-col p-6 bg-leaflighest shadow-md w-1/2"
+            className="flex flex-col p-6 bg-leaflighest shadow-md md:w-1/2"
             method="POST"
         >
             <h3 className="text-center py-4 text-xl text-white p-3 bg-leafdarkest mb-4">

@@ -54,7 +54,7 @@ function ConceptoForm({ concepto }) {
     return (
         <form
             onSubmit={submit}
-            className="flex bg-leaflighest flex-col p-5 shadow-md w-1/2 h-1/2 mb-5"
+            className="flex bg-leaflighest flex-col p-5 shadow-md md:w-1/2 h-1/2 mb-5"
             method="POST"
         >
             <h3 className="text-center py-4 text-white text-xl bg-leafdarkest mb-4">
