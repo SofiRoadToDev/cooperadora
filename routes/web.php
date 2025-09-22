@@ -1,93 +1,47 @@
 <?php
 
-use App\Http\Controllers\AlumnoController;
-use App\Http\Controllers\ApiController;
-use App\Http\Controllers\ConceptoController;
-use App\Http\Controllers\EgresoController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IngresoController;
+use App\Http\Controllers\EgresoController;
+use App\Http\Controllers\ConceptoController;
+use App\Http\Controllers\AlumnoController;
 use App\Http\Controllers\ReportController;
-use App\Mail\FacturaMail;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
-use App\Models\Ingreso;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Inertia\Inertia;
 
-
-
-
-
-Route::get('/', [IngresoController::class, 'index']);
-
-
-Route::resource('/alumnos', AlumnoController::class);
-
-Route::resource('/ingresos', IngresoController::class);
-
-Route::get('/ingresos/buscar-alumno/{dni}', [IngresoController::class, 'buscarAlumno']);
-
-Route::resource('/egresos', EgresoController::class);
-
-Route::resource('/conceptos', ConceptoController::class);
-
-// Rutas para informes
-Route::get('/informes', [ReportController::class, 'index'])->name('informes.index');
-
-// API endpoints para gráficos y datos (sin CSRF para peticiones GET)
-Route::withoutMiddleware(['csrf'])->group(function () {
-    Route::get('/api/informes/ingresos-por-concepto', [ReportController::class, 'getIngresosPorConcepto'])->name('api.informes.ingresos-concepto');
-    Route::get('/api/informes/egresos-por-categoria', [ReportController::class, 'getEgresosPorCategoria'])->name('api.informes.egresos-categoria');
-    Route::get('/api/informes/saldo-general', [ReportController::class, 'getSaldoGeneral'])->name('api.informes.saldo-general');
-    Route::get('/api/informes/resumen-mensual', [ReportController::class, 'getResumenMensual'])->name('api.informes.resumen-mensual');
-    Route::get('/api/informes/ingresos-detallados', [ReportController::class, 'getIngresosDetallados'])->name('api.informes.ingresos-detallados');
-    Route::get('/api/informes/egresos-detallados', [ReportController::class, 'getEgresosDetallados'])->name('api.informes.egresos-detallados');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
 });
 
-// Rutas de exportación
-Route::get('/informes/exportar-ingresos', [ReportController::class, 'exportarIngresos'])->name('informes.exportar-ingresos');
-Route::get('/informes/exportar-egresos', [ReportController::class, 'exportarEgresos'])->name('informes.exportar-egresos');
-Route::get('/informes/exportar-resumen', [ReportController::class, 'exportarResumen'])->name('informes.exportar-resumen');
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-/*Route::resource('/ingresos', IngresoController::class)->except('/');
-Route::resource('/egresos',EgresoController::class);
-Route::resource('/conceptos', ConceptoController::class);*/
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-// Voy a buscar en base de dato latest para obtener el id. Solo una persona debe usar el sistema por vez.
-Route::get('/mail', function (){
-    $ingreso = Ingreso::with(['alumno', 'conceptos'])->latest()->first();
-    
-    if(!$ingreso){
-        return redirect()
-                ->route('ingresos.create')
-                ->with('error', 'No se encontró ningún ingreso');
-    }
-    
-    if(!$ingreso->email || !filter_var($ingreso->email, FILTER_VALIDATE_EMAIL)){
-        return redirect()
-                ->route('ingresos.create')
-                ->with('error', 'Email no válido o no proporcionado');
-    }
-    
-    Mail::to($ingreso->email)->send(new FacturaMail($ingreso));
+    // Rutas de la aplicación principal
+    Route::resource('ingresos', IngresoController::class);
+    Route::resource('egresos', EgresoController::class);
+    Route::resource('conceptos', ConceptoController::class);
+    Route::resource('alumnos', AlumnoController::class);
 
-    return redirect()
-            ->route('alumnos.create')// Por si quire tambien imprimir lo volvemos al formulario
-            ->with('success', 'Email enviado correctamente');
-})->name('mails.factura');
+    // Rutas de informes
+    Route::get('/informes', [ReportController::class, 'index'])->name('informes.index');
+    Route::get('/api/ingresos-por-concepto', [ReportController::class, 'ingresosPorConcepto'])->withoutMiddleware(['csrf']);
+    Route::get('/api/egresos-por-categoria', [ReportController::class, 'egresosPorCategoria'])->withoutMiddleware(['csrf']);
+    Route::get('/api/ingresos-detallados', [ReportController::class, 'ingresosDetallados'])->withoutMiddleware(['csrf']);
+    Route::get('/api/egresos-detallados', [ReportController::class, 'egresosDetallados'])->withoutMiddleware(['csrf']);
+    Route::get('/export/ingresos-concepto', [ReportController::class, 'exportIngresosPorConcepto'])->name('export.ingresos.concepto');
+    Route::get('/export/egresos-categoria', [ReportController::class, 'exportEgresosPorCategoria'])->name('export.egresos.categoria');
+    Route::get('/export/ingresos-detallados', [ReportController::class, 'exportIngresosDetallados'])->name('export.ingresos.detallados');
+    Route::get('/export/egresos-detallados', [ReportController::class, 'exportEgresosDetallados'])->name('export.egresos.detallados');
+});
 
-
-Route::get('/pdf', function () {
-    $ingreso = Ingreso::with(['alumno', 'conceptos'])->latest()->first();
-    
-    if(!$ingreso){
-        return redirect()
-                ->route('ingresos.create')
-                ->with('error', 'No se encontró ningún ingreso');
-    }
-
-    $factura = Pdf::loadView('pdf.factura', compact('ingreso'));
-
-    return $factura->download('comprobante-' . $ingreso->id . '.pdf');
-})->name('pdfs.factura');
-
-
-Route::get('/api/alumnos/{dni}', [ApiController::class, 'alumnosPorDni']);
+require __DIR__.'/auth.php';

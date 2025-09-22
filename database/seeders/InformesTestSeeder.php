@@ -9,6 +9,7 @@ use App\Models\Categoria;
 use App\Models\Ingreso;
 use App\Models\Egreso;
 use App\Models\Curso;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -86,6 +87,14 @@ class InformesTestSeeder extends Seeder
         $conceptosCreados = Concepto::all();
         $categoriasCreadas = Categoria::all();
 
+        // Obtener los usuarios existentes para distribuir los datos
+        $usuarios = User::whereIn('username', ['usuario1', 'usuario2'])->get();
+
+        if ($usuarios->count() < 2) {
+            $this->command->error('❌ Se necesitan al menos 2 usuarios (usuario1 y usuario2) para crear datos de prueba.');
+            return;
+        }
+
         // Crear ingresos de prueba para los últimos 3 meses
         $fechasIngresos = [];
         for ($i = 0; $i < 90; $i++) {
@@ -97,6 +106,9 @@ class InformesTestSeeder extends Seeder
             $fecha = $fechasIngresos[array_rand($fechasIngresos)];
             $alumno = $alumnosCreados->random();
 
+            // Alternar entre usuarios para distribuir los ingresos
+            $usuario = $usuarios[$i % 2];
+
             // Seleccionar 1-3 conceptos aleatorios
             $conceptosParaIngreso = $conceptosCreados->random(rand(1, 3));
             $importeTotal = 0;
@@ -105,6 +117,7 @@ class InformesTestSeeder extends Seeder
                 'fecha' => $fecha->format('Y-m-d'),
                 'hora' => $fecha->format('H:i:s'),
                 'alumno_id' => $alumno->id,
+                'user_id' => $usuario->id,
                 'observaciones' => $i % 4 == 0 ? 'Pago en efectivo' : null,
                 'importe_total' => 0, // Se calculará después
                 'emailSent' => false,
@@ -161,6 +174,9 @@ class InformesTestSeeder extends Seeder
             $fecha = $fechasEgresos[array_rand($fechasEgresos)];
             $egresoData = $egresosData[array_rand($egresosData)];
 
+            // Alternar entre usuarios para distribuir los egresos
+            $usuario = $usuarios[$i % 2];
+
             $categoria = $categoriasCreadas->firstWhere('nombre', $egresoData['categoria']);
             $importe = rand($egresoData['importe_min'], $egresoData['importe_max']);
 
@@ -168,6 +184,7 @@ class InformesTestSeeder extends Seeder
                 'fecha' => $fecha->format('Y-m-d'),
                 'hora' => $fecha->format('H:i:s'),
                 'categoria_id' => $categoria ? $categoria->id : null,
+                'user_id' => $usuario->id,
                 'concepto' => $egresoData['concepto'],
                 'importe' => $importe,
                 'empresa' => $empresas[array_rand($empresas)],
@@ -183,8 +200,8 @@ class InformesTestSeeder extends Seeder
         $this->command->info('   • ' . $alumnosCreados->count() . ' alumnos');
         $this->command->info('   • ' . $conceptosCreados->count() . ' conceptos');
         $this->command->info('   • ' . $categoriasCreadas->count() . ' categorías');
-        $this->command->info('   • 25 ingresos con conceptos asociados');
-        $this->command->info('   • 20 egresos con categorías');
+        $this->command->info('   • 25 ingresos distribuidos entre ' . $usuarios[0]->username . ' y ' . $usuarios[1]->username);
+        $this->command->info('   • 20 egresos distribuidos entre ' . $usuarios[0]->username . ' y ' . $usuarios[1]->username);
         $this->command->info('   • Datos distribuidos en los últimos 3 meses');
     }
 }

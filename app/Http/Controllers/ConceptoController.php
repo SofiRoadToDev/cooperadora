@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class ConceptoController extends Controller
 {
- 
+
     public function index()
     {
         $conceptos = Concepto::all();

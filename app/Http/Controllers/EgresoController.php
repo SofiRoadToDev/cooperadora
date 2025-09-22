@@ -10,6 +10,7 @@ use Inertia\Inertia;
 
 class EgresoController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      */

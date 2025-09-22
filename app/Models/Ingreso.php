@@ -3,10 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Ingreso extends Model
 {
-    protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso', 'email'];
+    protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso', 'email', 'user_id'];
+
+    protected static function booted()
+    {
+        static::creating(function ($ingreso) {
+            if (Auth::check() && Auth::id()) {
+                $ingreso->user_id = Auth::id();
+            }
+        });
+    }
 
 
     public function conceptos(){
@@ -17,5 +28,9 @@ class Ingreso extends Model
     }
     public function alumno(){
         return $this->belongsTo(Alumno::class, 'alumno_id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }
