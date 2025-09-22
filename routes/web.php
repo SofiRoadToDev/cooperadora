@@ -31,10 +31,12 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de informes
     Route::get('/informes', [ReportController::class, 'index'])->name('informes.index');
-    Route::get('/api/ingresos-por-concepto', [ReportController::class, 'ingresosPorConcepto'])->withoutMiddleware(['csrf']);
-    Route::get('/api/egresos-por-categoria', [ReportController::class, 'egresosPorCategoria'])->withoutMiddleware(['csrf']);
-    Route::get('/api/ingresos-detallados', [ReportController::class, 'ingresosDetallados'])->withoutMiddleware(['csrf']);
-    Route::get('/api/egresos-detallados', [ReportController::class, 'egresosDetallados'])->withoutMiddleware(['csrf']);
+    Route::get('/api/ingresos-por-concepto', [ReportController::class, 'getIngresosPorConcepto'])->withoutMiddleware(['csrf']);
+    Route::get('/api/egresos-por-categoria', [ReportController::class, 'getEgresosPorCategoria'])->withoutMiddleware(['csrf']);
+    Route::get('/api/ingresos-detallados', [ReportController::class, 'getIngresosDetallados'])->withoutMiddleware(['csrf']);
+    Route::get('/api/egresos-detallados', [ReportController::class, 'getEgresosDetallados'])->withoutMiddleware(['csrf']);
+    Route::get('/api/saldo-general', [ReportController::class, 'getSaldoGeneral'])->withoutMiddleware(['csrf']);
+    Route::get('/api/resumen', [ReportController::class, 'getResumen'])->withoutMiddleware(['csrf']);
     Route::get('/export/ingresos-concepto', [ReportController::class, 'exportIngresosPorConcepto'])->name('export.ingresos.concepto');
     Route::get('/export/egresos-categoria', [ReportController::class, 'exportEgresosPorCategoria'])->name('export.egresos.categoria');
     Route::get('/export/ingresos-detallados', [ReportController::class, 'exportIngresosDetallados'])->name('export.ingresos.detallados');

@@ -30,12 +30,15 @@ export default function Informes({ fecha_inicio_default, fecha_fin_default }) {
                 ingresosDetalle,
                 egresosDetalle
             ] = await Promise.all([
-                axios.get('/api/informes/ingresos-por-concepto', { params }),
-                axios.get('/api/informes/egresos-por-categoria', { params }),
-                axios.get('/api/informes/saldo-general', { params }),
-                axios.get('/api/informes/ingresos-detallados', { params }),
-                axios.get('/api/informes/egresos-detallados', { params })
+                axios.get('/api/ingresos-por-concepto', { params }),
+                axios.get('/api/egresos-por-categoria', { params }),
+                axios.get('/api/saldo-general', { params }),
+                axios.get('/api/ingresos-detallados', { params }),
+                axios.get('/api/egresos-detallados', { params })
             ]);
+            console.log(ingresos.data);
+            console.log(egresos.data);
+            console.log(saldo.data);        
 
             setIngresosPorConcepto(ingresos.data);
             setEgresosPorCategoria(egresos.data);

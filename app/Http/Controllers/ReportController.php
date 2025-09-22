@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Support\Facades\Log;
+
 
 class ReportController extends Controller
 {
@@ -27,9 +30,12 @@ class ReportController extends Controller
     }
 
     public function getIngresosPorConcepto(Request $request)
-    {
+    {   Log::info($request->input('fecha_inicio') );
+        Log::info($request->input('fecha_fin') );
+        try{
         $fechaInicio = $request->input('fecha_inicio', Carbon::now()->startOfMonth());
         $fechaFin = $request->input('fecha_fin', Carbon::now()->endOfMonth());
+      
 
         $ingresosPorConcepto = DB::table('ingreso_detalle_conceptos as idc')
             ->join('ingresos as i', 'idc.ingreso_id', '=', 'i.id')
@@ -45,6 +51,12 @@ class ReportController extends Controller
             ->get();
 
         return response()->json($ingresosPorConcepto);
+        }
+        catch(\Exception $e){
+            Log::error('Error en getIngresosPorConcepto: ' . $e->getMessage());
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function getEgresosPorCategoria(Request $request)
