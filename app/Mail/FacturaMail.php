@@ -40,7 +40,7 @@ class FacturaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.factura',
+            view: 'mails.recibo-print',
             with: [
                 'ingreso' => $this->ingreso,
             ],
