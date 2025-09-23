@@ -134,13 +134,11 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
     <div class="max-w-7xl mx-auto">
         <!-- Botones de acción -->
         <div class="mb-6 flex gap-4 justify-center no-print">
-            <button onclick="imprimirRecibo()" class="btn-print text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                <i class="fas fa-print"></i>
-                Imprimir Directamente
-            </button>
             <button onclick="capturarYImprimir()" class="btn-capture text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                <i class="fas fa-camera"></i>
-                Capturar e Imprimir
+               Imprimir
+            </button>
+            <button onclick="window.close()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                Enviar email
             </button>
             <button onclick="window.close()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
                 <i class="fas fa-times"></i>
@@ -163,7 +161,7 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
                     <p class="text-right mb-5 text-lg">Salta, {{ $ingreso->fecha ? \Carbon\Carbon::parse($ingreso->fecha)->locale('es')->translatedFormat('d \d\e F \d\e Y') : 'N/A' }}</p>
                     <p class="text-left mb-5 text-lg">Recibí de {{ $ingreso->alumno->apellido ?? 'N/A' }} {{ $ingreso->alumno->nombre ?? '' }}</p>
                     <p class="text-left mb-5 text-lg">DNI: {{ $ingreso->alumno->dni ?? 'N/A' }}</p>
-                    <p class="text-left mb-5 text-lg">la suma de ${{ number_format($ingreso->importe_total ?? 0, 2, ',', '.') }}</p>
+                    <p class="text-left mb-5 text-lg">la suma de {{ numeroATexto($ingreso->importe_total ?? 0, 2, ',', '.') }} pesos </p>
 
                     @if($ingreso->conceptos && $ingreso->conceptos->count() > 0)
                         <p class="text-left mb-3 text-lg">En concepto de:</p>
@@ -180,7 +178,7 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
 
                     <div id="bottom" class="border-t border-black p-2 flex justify-between px-7 mt-auto">
                         <div>
-                            <p class="text-left mb-3 text-lg">Son <strong>pesos {{ numeroATexto($ingreso->importe_total ?? 0) }}</strong></p>
+                            <p class="text-left mb-3 text-lg">Son <strong>$ {{ $ingreso->importe_total ?? 0 }}</strong></p>
                             @if($ingreso->email)
                                 <p class="text-left text-sm">Email: {{ $ingreso->email }}</p>
                             @endif
@@ -204,9 +202,6 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
     </div>
 
     <script>
-        function imprimirRecibo() {
-            window.print();
-        }
 
         async function capturarYImprimir() {
             try {
