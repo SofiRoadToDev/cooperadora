@@ -26,12 +26,18 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de la aplicación principal
     Route::get('/ingresos/{ingreso}/pdf', [IngresoController::class, 'generarPDF'])->name('pdfs.factura');
+    Route::get('/ingresos/{ingreso}/print', [IngresoController::class, 'mostrarParaImprimir'])->name('ingresos.print');
     Route::get('/ingresos/{ingreso}/email', [IngresoController::class, 'enviarEmail'])->name('mails.factura');
     Route::resource('ingresos', IngresoController::class);
     Route::resource('egresos', EgresoController::class);
     Route::resource('conceptos', ConceptoController::class);
     Route::resource('categorias', CategoriaController::class);
     Route::resource('alumnos', AlumnoController::class);
+
+
+    Route::get('/test', function () {
+        return view('pdf.recibo', ['ingreso' => \App\Models\Ingreso::find(1)]);
+    });
 
     // Rutas de informes
     Route::get('/informes', [ReportController::class, 'index'])->name('informes.index');

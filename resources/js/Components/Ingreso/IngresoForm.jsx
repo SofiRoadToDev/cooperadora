@@ -385,16 +385,16 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                     {processing ? 'Enviando...' : (ingreso?.id ? 'Actualizar' : 'Crear Ingreso')}
                 </button>
                 
-                {/* PDF Button - disabled if ingreso not created */}
+                {/* Print Button - disabled if ingreso not created */}
                 {ingreso?.id ? (
-                    <a href='/pdf' className="mx-auto mt-2 flex flex-col items-center hover:opacity-80">
-                        <i className="fas fa-file-pdf text-leafdarkest text-4xl"></i>
-                        <span className="text-sm text-leafdarkest mt-1">Descargar PDF</span>
+                    <a href={`/ingresos/${ingreso.id}/print`} target="_blank" className="mx-auto mt-2 flex flex-col items-center hover:opacity-80">
+                        <i className="fas fa-print text-leafdarkest text-4xl"></i>
+                        <span className="text-sm text-leafdarkest mt-1">Imprimir</span>
                     </a>
                 ) : (
                     <div className="mx-auto mt-2 flex flex-col items-center opacity-50 cursor-not-allowed">
-                        <i className="fas fa-file-pdf text-gray-400 text-4xl"></i>
-                        <span className="text-sm text-gray-400 mt-1">Descargar PDF</span>
+                        <i className="fas fa-print text-gray-400 text-4xl"></i>
+                        <span className="text-sm text-gray-400 mt-1">Imprimir</span>
                     </div>
                 )}
             </div>

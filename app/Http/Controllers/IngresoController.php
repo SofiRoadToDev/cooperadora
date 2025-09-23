@@ -95,6 +95,7 @@ class IngresoController extends Controller
 
         $conceptos = Concepto::all();
         $ingreso->load('conceptos');
+        $ingreso->load('alumno');
         return Inertia('Ingreso/IngresoEdit', compact('ingreso', 'conceptos'));
     }
 
@@ -170,7 +171,7 @@ class IngresoController extends Controller
             \Log::info('Conceptos: ' . $ingreso->conceptos->count());
 
             // Generar PDF usando la vista de email
-            $pdf = \PDF::loadView('mails.factura', ['ingreso' => $ingreso]);
+            $pdf = \PDF::loadView('pdf.recibo', ['ingreso' => $ingreso]);
 
             $filename = 'recibo_' . str_pad($ingreso->id, 6, '0', STR_PAD_LEFT) . '.pdf';
 
@@ -181,6 +182,19 @@ class IngresoController extends Controller
             return redirect()->back()
                 ->withErrors(['error' => 'Error al generar PDF: ' . $e->getMessage()]);
         }
+    }
+
+    public function mostrarParaImprimir(Ingreso $ingreso)
+    {
+        // Verificar que el ingreso pertenece al usuario autenticado
+        if ($ingreso->user_id !== Auth::user()->id) {
+            abort(403, 'No tienes permisos para acceder a este ingreso.');
+        }
+
+        // Cargar relaciones necesarias
+        $ingreso->load(['alumno', 'conceptos']);
+
+        return view('pdf.recibo-print', compact('ingreso'));
     }
 
     public function enviarEmail(Ingreso $ingreso)

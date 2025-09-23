@@ -24,7 +24,7 @@
         <div class="p-4 border-b border-gray-300">
             <div class="flex justify-between mb-2">
                 <span class="font-bold">Fecha:</span>
-                <span>{{ $ingreso->fecha ?? 'N/A' }}</span>
+                <span>{{ $ingreso->fecha ? \Carbon\Carbon::parse($ingreso->fecha)->locale('es')->translatedFormat('d \d\e F \d\e Y') : 'N/A' }}</span>
             </div>
             <div class="flex justify-between mb-2">
                 <span class="font-bold">Hora:</span>
