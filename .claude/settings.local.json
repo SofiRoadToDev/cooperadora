@@ -12,7 +12,8 @@
       "Bash(npm run build:*)",
       "Bash(curl:*)",
       "Bash(cat:*)",
-      "Bash(php:*)"
+      "Bash(php:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

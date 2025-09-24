@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Ingreso extends Model
 {
-    protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso', 'email', 'user_id'];
+    protected $fillable = ['fecha', 'hora', 'alumno_id', 'observaciones', 'importe_total', 'emailSent', 'impreso', 'user_id'];
 
 
     public function conceptos(){

@@ -3,7 +3,7 @@ import { useForm, router } from '@inertiajs/react';
 import Alert from '@/Components/Alert';
 import ConceptoBlock from './ConceptoBlock';
 
-const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
+const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => {
     const [conceptoBlocks, setConceptoBlocks] = useState([{
         id: Date.now(),
         concepto_id: '',
@@ -54,7 +54,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                 dni: ingreso.alumno?.dni || '',
                 alumno_id: ingreso.alumno_id || '',
                 alumno: ingreso.alumno?.nombre || '',
-                email: ingreso.email || '',
+                email: emailSesion || ingreso.alumno?.email || '',
                 conceptos: initialConceptos, // Inicializar conceptos con los datos existentes
                 importe_total: ingreso.importe_total || '0.00'
             });
@@ -63,7 +63,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [] }) => {
                 setAlumnoEncontrado(`${ingreso.alumno.nombre} ${ingreso.alumno.apellido}`);
             }
         }
-    }, [ingreso]);
+    }, [ingreso, emailSesion]);
 
     const buscarAlumno = async () => {
         if (!data.dni) return;

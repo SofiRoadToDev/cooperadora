@@ -40,10 +40,20 @@ class IngresoController extends Controller
      */
     public function store(StoreIngresoRequest $request)
     {
-        $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email', 'observaciones']);
+        \Log::info('=== STORE INGRESO ===');
+        \Log::info('Email recibido en store: ' . ($request->email ?? 'null'));
+
+        $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'observaciones']);
         $ingresoData['user_id'] = Auth::user()->id;
 
-        $ingreso = Ingreso::create($ingresoData); 
+        $ingreso = Ingreso::create($ingresoData);
+
+        // Guardar email en sesión si existe
+        if ($request->filled('email')) {
+            session(['ingreso_email_' . $ingreso->id => $request->email]);
+            \Log::info('Email guardado en sesión (store): ' . $request->email);
+        }
+
         $conceptos = [];
         foreach ($request->input('conceptos') as $concepto) {
             $conceptos[$concepto['id']] = [
@@ -96,7 +106,11 @@ class IngresoController extends Controller
         $conceptos = Concepto::all();
         $ingreso->load('conceptos');
         $ingreso->load('alumno');
-        return Inertia('Ingreso/IngresoEdit', compact('ingreso', 'conceptos'));
+
+        // Recuperar email de la sesión si existe
+        $emailSesion = session('ingreso_email_' . $ingreso->id);
+
+        return Inertia('Ingreso/IngresoEdit', compact('ingreso', 'conceptos', 'emailSesion'));
     }
 
     /**
@@ -104,10 +118,25 @@ class IngresoController extends Controller
      */
     public function update(StoreIngresoRequest $request, Ingreso $ingreso)
     {
+        \Log::info('=== UPDATE INGRESO ===');
+        \Log::info('Ingreso ID: ' . $ingreso->id);
+        \Log::info('Email recibido: ' . ($request->email ?? 'null'));
+        \Log::info('Email filled: ' . ($request->filled('email') ? 'true' : 'false'));
+
         try {
-            $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'email', 'observaciones']);
+            $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'observaciones']);
 
             $ingreso->update($ingresoData);
+
+            // Actualizar email en sesión si existe
+            if ($request->filled('email')) {
+                session(['ingreso_email_' . $ingreso->id => $request->email]);
+                \Log::info('Email guardado en sesión: ' . $request->email);
+            } else {
+                // Si no hay email, limpiar la sesión
+                session()->forget('ingreso_email_' . $ingreso->id);
+                \Log::info('Email eliminado de sesión (estaba vacío)');
+            }
 
             // Detach existing conceptos and attach new ones
             $ingreso->conceptos()->detach();
@@ -186,6 +215,9 @@ class IngresoController extends Controller
 
     public function mostrarParaImprimir(Ingreso $ingreso)
     {
+        \Log::info('=== ACCESO A mostrarParaImprimir ===');
+        \Log::info('Ingreso ID para mostrar: ' . $ingreso->id);
+
         // Verificar que el ingreso pertenece al usuario autenticado
         if ($ingreso->user_id !== Auth::user()->id) {
             abort(403, 'No tienes permisos para acceder a este ingreso.');
@@ -199,33 +231,57 @@ class IngresoController extends Controller
 
     public function enviarEmail(Ingreso $ingreso)
     {
+        \Log::info('=== INICIO enviarEmail ===');
+        \Log::info('Ingreso ID: ' . $ingreso->id);
+        \Log::info('User ID actual: ' . Auth::user()->id);
+        \Log::info('Ingreso User ID: ' . $ingreso->user_id);
+
         // Verificar que el ingreso pertenece al usuario autenticado
         if ($ingreso->user_id !== Auth::user()->id) {
+            \Log::error('Acceso denegado - usuario no autorizado');
             abort(403, 'No tienes permisos para acceder a este ingreso.');
         }
 
         // Cargar relaciones necesarias
         $ingreso->load(['alumno', 'conceptos']);
+        \Log::info('Relaciones cargadas');
 
-        // Verificar que hay un email para enviar
-        $email = $ingreso->email ?? $ingreso->alumno->email ?? null;
+        // Buscar email en este orden: sesión → alumno → error
+        $emailSesion = session('ingreso_email_' . $ingreso->id);
+        $emailAlumno = $ingreso->alumno->email ?? null;
+        \Log::info('Email sesión: ' . ($emailSesion ?? 'null'));
+        \Log::info('Email alumno: ' . ($emailAlumno ?? 'null'));
+
+        $email = $emailSesion ?? $emailAlumno ?? null;
+        \Log::info('Email final: ' . ($email ?? 'null'));
 
         if (!$email) {
+            \Log::error('No se encontró email');
             return redirect()->back()
                 ->withErrors(['error' => 'No se encontró una dirección de email para enviar el recibo.']);
         }
 
         try {
+            \Log::info('Intentando enviar email a: ' . $email);
+
             // Enviar email
             Mail::to($email)->send(new FacturaMail($ingreso));
+            \Log::info('Email enviado exitosamente');
 
             // Marcar como enviado
             $ingreso->update(['emailSent' => true]);
+            \Log::info('Ingreso marcado como enviado');
+
+            // Limpiar email de la sesión después de enviar exitosamente
+            session()->forget('ingreso_email_' . $ingreso->id);
+            \Log::info('Sesión limpiada');
 
             return redirect()->back()
                 ->with('success', 'Recibo enviado exitosamente a ' . $email);
 
         } catch (\Exception $e) {
+            \Log::error('Error enviando email: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al enviar el email: ' . $e->getMessage()]);
         }
