@@ -135,11 +135,12 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
         <!-- Botones de acción -->
         <div class="mb-6 flex gap-4 justify-center no-print">
             <button onclick="capturarYImprimir()" class="btn-capture text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-               Imprimir
+                Imprimir
             </button>
-            <button onclick="window.close()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                <a href="{{ route('ingresos.email', $ingreso) }}">Enviar email</a>
-            </button>
+            
+            <a href="{{ route('mails.factura', $ingreso) }}" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2" onclick="console.log('Click en enviar email', '{{ route('mails.factura', $ingreso) }}', 'Email a enviar: {{ $emailSesion ?? ($ingreso->alumno->email ?? 'N/A') }}');">
+                Enviar email
+            </a>
             <button onclick="window.close()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
                 <i class="fas fa-times"></i>
                 Cerrar

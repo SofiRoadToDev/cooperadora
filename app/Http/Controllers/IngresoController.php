@@ -46,6 +46,9 @@ class IngresoController extends Controller
         $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'observaciones']);
         $ingresoData['user_id'] = Auth::user()->id;
 
+        // Combinar fecha y hora en formato dateTime
+        $ingresoData['hora'] = $ingresoData['fecha'] . ' ' . $ingresoData['hora'] . ':00';
+
         $ingreso = Ingreso::create($ingresoData);
 
         // Guardar email en sesión si existe
@@ -119,12 +122,14 @@ class IngresoController extends Controller
     public function update(StoreIngresoRequest $request, Ingreso $ingreso)
     {
         \Log::info('=== UPDATE INGRESO ===');
-        \Log::info('Ingreso ID: ' . $ingreso->id);
         \Log::info('Email recibido: ' . ($request->email ?? 'null'));
         \Log::info('Email filled: ' . ($request->filled('email') ? 'true' : 'false'));
 
         try {
             $ingresoData = $request->only(['fecha', 'hora', 'alumno_id', 'importe_total', 'observaciones']);
+
+            // Combinar fecha y hora en formato dateTime
+            $ingresoData['hora'] = $ingresoData['fecha'] . ' ' . $ingresoData['hora'] . ':00';
 
             $ingreso->update($ingresoData);
 
@@ -135,10 +140,8 @@ class IngresoController extends Controller
             } else {
                 // Si no hay email, limpiar la sesión
                 session()->forget('ingreso_email_' . $ingreso->id);
-                \Log::info('Email eliminado de sesión (estaba vacío)');
             }
 
-            // Detach existing conceptos and attach new ones
             $ingreso->conceptos()->detach();
 
             $conceptos = [];
@@ -152,7 +155,7 @@ class IngresoController extends Controller
             $ingreso->conceptos()->attach($conceptos);
 
             return redirect()
-                ->route('ingresos.index')
+                ->route('ingresos.edit', $ingreso)
                 ->with('success', 'Ingreso actualizado exitosamente.');
 
         } catch (\Exception $e) {
@@ -216,7 +219,7 @@ class IngresoController extends Controller
     public function mostrarParaImprimir(Ingreso $ingreso)
     {
         \Log::info('=== ACCESO A mostrarParaImprimir ===');
-        \Log::info('Ingreso ID para mostrar: ' . $ingreso->id);
+       
 
         // Verificar que el ingreso pertenece al usuario autenticado
         if ($ingreso->user_id !== Auth::user()->id) {
@@ -226,15 +229,15 @@ class IngresoController extends Controller
         // Cargar relaciones necesarias
         $ingreso->load(['alumno', 'conceptos']);
 
-        return view('pdf.recibo-print', compact('ingreso'));
+        // Recuperar email de la sesión si existe para pasarlo a la vista
+        $emailSesion = session('ingreso_email_' . $ingreso->id);
+         \Log::info('emailSession antes de ir a la vista impresion: ' . $emailSesion);
+        return view('pdf.recibo-print', compact('ingreso', 'emailSesion'));
     }
 
     public function enviarEmail(Ingreso $ingreso)
     {
         \Log::info('=== INICIO enviarEmail ===');
-        \Log::info('Ingreso ID: ' . $ingreso->id);
-        \Log::info('User ID actual: ' . Auth::user()->id);
-        \Log::info('Ingreso User ID: ' . $ingreso->user_id);
 
         // Verificar que el ingreso pertenece al usuario autenticado
         if ($ingreso->user_id !== Auth::user()->id) {
@@ -244,7 +247,6 @@ class IngresoController extends Controller
 
         // Cargar relaciones necesarias
         $ingreso->load(['alumno', 'conceptos']);
-        \Log::info('Relaciones cargadas');
 
         // Buscar email en este orden: sesión → alumno → error
         $emailSesion = session('ingreso_email_' . $ingreso->id);

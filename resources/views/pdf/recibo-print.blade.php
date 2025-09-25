@@ -128,6 +128,35 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
+
+        /* Popup styles */
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 9999;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+        }
+
+        .popup.show {
+            transform: translateX(0);
+        }
+
+        .popup.success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .popup.error {
+            background-color: #ef4444;
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen p-8">
@@ -135,9 +164,10 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
         <!-- Botones de acción -->
         <div class="mb-6 flex gap-4 justify-center no-print">
             <button onclick="capturarYImprimir()" class="btn-capture text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-               Imprimir
+                Imprimir
             </button>
-            <a href="{{ route('mails.factura', $ingreso) }}" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2" onclick="console.log('Click en enviar email', '{{ route('mails.factura', $ingreso) }}');">
+            
+            <a href="{{ route('mails.factura', $ingreso) }}" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2" onclick="console.log('Click en enviar email', '{{ route('mails.factura', $ingreso) }}', 'Email a enviar: {{ $emailSesion ?? ($ingreso->alumno->email ?? 'N/A') }}');">
                 Enviar email
             </a>
             <button onclick="window.close()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
@@ -200,6 +230,37 @@ function convertirCentenas($numero, $unidades, $especiales, $decenas, $centenas)
             </p>
         </div>
     </div>
+
+    <!-- Popup para mensajes -->
+    @if(session('success') || session('error') || $errors->any())
+        <div id="popup" class="popup {{ session('success') ? 'success' : 'error' }}">
+            @if(session('success'))
+                {{ session('success') }}
+            @elseif(session('error'))
+                {{ session('error') }}
+            @elseif($errors->any())
+                {{ $errors->first() }}
+            @endif
+        </div>
+    @endif
+
+    <script>
+        // Mostrar popup si hay mensajes
+        window.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('popup');
+            if (popup) {
+                // Mostrar el popup
+                setTimeout(() => {
+                    popup.classList.add('show');
+                }, 100);
+
+                // Ocultarlo después de 3 segundos
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 3500);
+            }
+        });
+    </script>
 
     <script>
 

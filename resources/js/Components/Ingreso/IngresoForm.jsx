@@ -3,6 +3,14 @@ import { useForm, router } from '@inertiajs/react';
 import Alert from '@/Components/Alert';
 import ConceptoBlock from './ConceptoBlock';
 
+// Función para obtener la hora actual en formato H:i
+const getCurrentTime = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+};
+
 const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => {
     const [conceptoBlocks, setConceptoBlocks] = useState([{
         id: Date.now(),
@@ -16,7 +24,7 @@ const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => 
     
     const { data, setData, post, put, processing, errors, reset } = useForm({
         fecha: new Date().toISOString().split('T')[0],
-        hora: new Date().toTimeString().slice(0, 5),
+        hora: '',
         dni: '',
         alumno_id: '',
         alumno: '',
@@ -24,6 +32,16 @@ const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => 
         conceptos: [], // Asegurarse de que conceptos esté inicializado como array vacío
         importe_total: '0.00'
     });
+
+    // useEffect para inicializar la hora cuando el componente se monta
+    useEffect(() => {
+        if (!ingreso) {
+            setData(prev => ({
+                ...prev,
+                hora: getCurrentTime()
+            }));
+        }
+    }, []);
 
     useEffect(() => {
         if (ingreso) {
@@ -48,9 +66,21 @@ const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => 
             }
             
             // Actualizar el estado del formulario con los datos del ingreso
+            // Si hora es dateTime, extraer solo HH:MM
+            let horaFormatted = getCurrentTime();
+            if (ingreso.hora) {
+                if (ingreso.hora.includes(' ')) {
+                    // Formato datetime: "2024-01-15 14:30:00" -> "14:30"
+                    horaFormatted = ingreso.hora.split(' ')[1].substring(0, 5);
+                } else {
+                    // Formato time: "14:30:00" -> "14:30"
+                    horaFormatted = ingreso.hora.substring(0, 5);
+                }
+            }
+
             setData({
                 fecha: ingreso.fecha || new Date().toISOString().split('T')[0],
-                hora: ingreso.hora || new Date().toTimeString().slice(0, 5),
+                hora: horaFormatted,
                 dni: ingreso.alumno?.dni || '',
                 alumno_id: ingreso.alumno_id || '',
                 alumno: ingreso.alumno?.nombre || '',
@@ -233,12 +263,15 @@ const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => 
         // Crear un objeto con los datos actualizados para enviar
         const formData = {
             ...data,
-            conceptos: validConceptos
+            conceptos: validConceptos,
+            // Combinar fecha y hora en formato dateTime si es necesario
+            hora: data.hora // Mantener el formato H:i para la validación
         };
         
         // Depuración para verificar los datos antes de enviar
         console.log('Datos a enviar:', formData);
         console.log('Conceptos a enviar:', formData.conceptos);
+        console.log('Hora a enviar:', formData.hora);
         
         // Enviar el formulario
         if (ingreso?.id) {
@@ -274,8 +307,8 @@ const IngresoForm = ({ ingreso = null, conceptos = [], emailSesion = null }) => 
                     type="time" 
                     className="my-2 border border-slate-600 p-1" 
                     name="hora" 
-                    readOnly 
                     value={data.hora}
+                    onChange={(e) => setData('hora', e.target.value)}
                 />
                 
                 <div className="flex flex-col">

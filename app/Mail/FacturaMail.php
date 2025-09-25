@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Ingreso;
 
@@ -40,7 +41,7 @@ class FacturaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mails.recibo-print',
+            view: 'mails.recibo',
             with: [
                 'ingreso' => $this->ingreso,
             ],
