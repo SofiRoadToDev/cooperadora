@@ -1,66 +1,252 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Cooperadora Escolar - EET3107 Juana Azurduy de Padilla
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/images/escudo.png" alt="Escudo EET3107" width="150">
 </p>
 
-## About Laravel
+Sistema web completo para la gestión de ingresos y comprobantes de la cooperadora escolar, desarrollado con Laravel 11, React (Inertia.js) y Tailwind CSS.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Características Principales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🏫 Gestión de Alumnos
+- **CRUD completo** de alumnos con validación de datos
+- **Búsqueda por DNI** para asociación automática en comprobantes
+- **Validación de DNI** con formato argentino
+- **Gestión de emails** para envío de comprobantes
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 💰 Sistema de Ingresos
+- **Creación y edición** de comprobantes de ingresos
+- **Múltiples conceptos** por comprobante con cálculo automático
+- **Gestión de cantidades** y totales por concepto
+- **Validación completa** de formularios con feedback en tiempo real
+- **Persistencia de datos** al actualizar (se mantiene en el formulario de edición)
 
-## Learning Laravel
+### 📄 Generación de Comprobantes
+- **Vista de impresión** optimizada con diseño profesional
+- **Captura HTML a imagen** para impresión de alta calidad
+- **Comprobantes numerados** automáticamente
+- **Conversión de números a texto** en español para montos
+- **Diseño responsive** con marca de agua del escudo institucional
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 📧 Sistema de Email
+- **Envío automático** de comprobantes por email
+- **Integración con Mailtrap** para desarrollo/testing
+- **Templates optimizados** para clientes de email
+- **Imágenes embebidas** en base64 para compatibilidad
+- **Gestión de sesión** para emails temporales
+- **Notificaciones visuales** con popups de éxito/error
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 🖨️ Funciones de Impresión
+- **Vista dedicada** para impresión `/ingresos/{id}/print`
+- **Captura HTML2Canvas** para impresión precisa
+- **Botones de acción** intuitivos (Imprimir, Email, Cerrar)
+- **Feedback visual** con popups temporales de estado
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Stack Tecnológico
 
-## Laravel Sponsors
+### Backend
+- **Laravel 11** - Framework PHP moderno
+- **SQLite** - Base de datos ligera
+- **Eloquent ORM** - Relaciones y migraciones
+- **Validation** - Validación robusta de formularios
+- **Mail System** - Envío de emails con templates
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Frontend
+- **React 18** - Biblioteca de UI moderna
+- **Inertia.js** - SPA sin API
+- **Tailwind CSS** - Framework CSS utilitario
+- **HTML2Canvas** - Captura de elementos HTML
 
-### Premium Partners
+### Desarrollo
+- **Vite** - Build tool y hot reload
+- **Laravel Mix** - Asset compilation
+- **Git** - Control de versiones
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## ⚙️ Configuración del Proyecto
 
-## Contributing
+### Requisitos
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- SQLite
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Instalación
 
-## Code of Conduct
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/SofiRoadToDev/cooperadora.git
+cd cooperadora
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. **Instalar dependencias PHP**
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+3. **Instalar dependencias JavaScript**
+```bash
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. **Configurar entorno**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## License
+5. **Configurar base de datos**
+```bash
+touch database/database.sqlite
+php artisan migrate --seed
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. **Compilar assets**
+```bash
+npm run build
+# O para desarrollo:
+npm run dev
+```
+
+7. **Iniciar servidor**
+```bash
+php artisan serve
+```
+
+### Configuración de Email
+
+Para habilitar el envío de emails, configura estas variables en `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=tu_username
+MAIL_PASSWORD=tu_password
+MAIL_ENCRYPTION=
+MAIL_FROM_ADDRESS="cooperadora@eet3107.edu.ar"
+MAIL_FROM_NAME="EET3107 Cooperadora"
+```
+
+## 🎯 Funcionalidades Implementadas
+
+### ✅ Módulo de Alumnos
+- [x] Listado con paginación y búsqueda
+- [x] Crear/Editar/Eliminar alumnos
+- [x] Validación de DNI argentino
+- [x] Gestión de emails
+
+### ✅ Módulo de Conceptos
+- [x] CRUD de conceptos de pago
+- [x] Precios configurables
+- [x] Asociación con comprobantes
+
+### ✅ Módulo de Ingresos
+- [x] Formulario dinámico de creación
+- [x] Búsqueda de alumno por DNI
+- [x] Múltiples conceptos por comprobante
+- [x] Cálculo automático de totales
+- [x] Validación de formato de hora (H:i)
+- [x] Persistencia en modo edición
+
+### ✅ Sistema de Comprobantes
+- [x] Numeración automática
+- [x] Conversión de números a texto
+- [x] Vista de impresión profesional
+- [x] Captura HTML2Canvas
+- [x] Marca de agua institucional
+
+### ✅ Sistema de Email
+- [x] Envío de comprobantes
+- [x] Templates responsive
+- [x] Imágenes base64 embebidas
+- [x] Manejo de errores
+- [x] Notificaciones visuales
+
+### ✅ Experiencia de Usuario
+- [x] Interfaz responsive
+- [x] Feedback visual inmediato
+- [x] Popups de notificación
+- [x] Formularios intuitivos
+- [x] Navegación fluida
+
+## 📁 Estructura del Proyecto
+
+```
+cooperadora/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AlumnoController.php     # Gestión de alumnos
+│   │   ├── ConceptoController.php   # Gestión de conceptos
+│   │   └── IngresoController.php    # Gestión de ingresos
+│   ├── Mail/
+│   │   └── FacturaMail.php          # Email de comprobantes
+│   └── Models/
+│       ├── Alumno.php               # Modelo de alumnos
+│       ├── Concepto.php             # Modelo de conceptos
+│       └── Ingreso.php              # Modelo de ingresos
+├── resources/
+│   ├── js/Components/
+│   │   ├── Ingreso/
+│   │   │   ├── IngresoForm.jsx      # Formulario de ingresos
+│   │   │   └── ConceptoBlock.jsx    # Bloque de concepto
+│   │   └── Alert.jsx                # Componente de alertas
+│   └── views/
+│       ├── mails/
+│       │   └── recibo.blade.php     # Template de email
+│       └── pdf/
+│           └── recibo-print.blade.php # Vista de impresión
+├── database/
+│   └── migrations/                  # Migraciones de BD
+└── public/
+    └── images/
+        └── escudo.png               # Logo institucional
+```
+
+## 🔧 Comandos Útiles
+
+```bash
+# Desarrollo
+npm run dev                    # Hot reload assets
+php artisan serve             # Servidor desarrollo
+
+# Base de datos
+php artisan migrate:fresh --seed  # Reset BD con datos
+php artisan tinker                # REPL de Laravel
+
+# Cache
+php artisan config:clear          # Limpiar cache config
+php artisan route:clear           # Limpiar cache rutas
+
+# Logs
+tail -f storage/logs/laravel.log  # Ver logs en tiempo real
+```
+
+## 🎨 Capturas de Pantalla
+
+### Dashboard de Ingresos
+Interfaz principal con listado de comprobantes, búsqueda y filtros.
+
+### Formulario de Comprobantes
+Formulario dinámico con búsqueda de alumnos y gestión de múltiples conceptos.
+
+### Vista de Impresión
+Comprobante profesional listo para imprimir con todos los detalles.
+
+### Email de Comprobante
+Template optimizado para clientes de email con diseño responsive.
+
+## 👥 Desarrollado por
+
+- **SofiRoadToDev** - Desarrollo Full Stack
+- **Claude (Anthropic)** - Asistencia en desarrollo y documentación
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+---
+
+<p align="center">
+  <strong>Sistema desarrollado para EET3107 "Juana Azurduy de Padilla"</strong><br>
+  🏫 Gestión moderna de cooperadora escolar 🏫
+</p>
